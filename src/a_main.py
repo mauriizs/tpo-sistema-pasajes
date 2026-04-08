@@ -12,10 +12,10 @@
 # └── instrucciones.md        <-- Guía de uso del sistema
 
 
-from b_info import catalogo_viajes
+from b_info import mostrar_bienvenida
 from f_validaciones import validar_dni, validar_opcion
 from c_micro import mostrar_asientos, reservar_lugar
-from d_busquedas import buscar_viaje
+from d_busquedas import catalogo_viajes, buscar_viajes
 from e_finanzas import calcular_recaudacion
 
 def main():
