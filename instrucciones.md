@@ -14,6 +14,11 @@ El sistema es un **Gestor de Ventas de Pasajes de Micro** para terminales. El fl
 
 ---
 
+## 📌 ALCANCE DE LA ENTREGA N1 (Foco Actual)
+Para esta primera evaluación, el sistema debe funcionar de manera secuencial en consola, manteniendo todos los datos en la memoria RAM (listas y diccionarios estáticos).
+**En esta etapa se debe priorizar la lógica de estructuras de datos y validaciones, dejando el almacenamiento persistente para futuras entregas.**
+
+---
 ## 🛑 REGLAS ESTRICTAS DE CÓDIGO (Qué SI y qué NO usar)
 
 ### ✅ Lo que DEBE usarse obligatoriamente:
