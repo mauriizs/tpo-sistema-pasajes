@@ -9,10 +9,12 @@
 #     │-- busquedas.py        (Filter y catálogo - Integrante 4)
 #     └── finanzas.py         (Map, reduce y cálculos - Integrante 5)
 
-import b_validaciones
-import c_micro
-import d_busquedas
-import e_finanzas
+
+
+from b_validaciones import validar_dni, validar_opcion
+from c_micro import mostrar_asientos, reservar_lugar
+from d_busquedas import buscar_viaje
+from e_finanzas import calcular_recaudacion
 
 def main():
     print("--- SISTEMA DE VENTA DE PASAJES ---")
