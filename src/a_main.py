@@ -10,8 +10,8 @@
 #     └── finanzas.py         (Map, reduce y cálculos - Integrante 5)
 
 
-
-from b_validaciones import validar_dni, validar_opcion
+from b_info import catalogo_viajes
+from f_validaciones import validar_dni, validar_opcion
 from c_micro import mostrar_asientos, reservar_lugar
 from d_busquedas import buscar_viaje
 from e_finanzas import calcular_recaudacion
