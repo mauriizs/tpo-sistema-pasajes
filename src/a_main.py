@@ -1,13 +1,15 @@
 # estructura del trabajo.
 # tpo-sistema-pasajes/
-# │-- .gitignore
-# │-- README.md
-# └── src/                    <-- La carpeta principal de código
-#     │-- main.py             (Menú principal - Integrante 1)
-#     │-- validaciones.py     (RegEx - Integrante 2)
-#     │-- micro.py            (Matriz y asientos - Integrante 3)
-#     │-- busquedas.py        (Filter y catálogo - Integrante 4)
-#     └── finanzas.py         (Map, reduce y cálculos - Integrante 5)
+# ├── docs/                   <-- Acá irá el PDF con la documentación final
+# ├── src/                    <-- Carpeta de código fuente
+# │   ├── a_main.py             (El Menú principal que une todo el programa)
+# │   ├── b_info.py             (Muestra los datos y bienvenida de la agencia)
+# │   ├── c_busquedas.py        (Tiene el catálogo de viajes y usa 'filter')
+# │   ├── d_micro.py            (Crea, muestra y modifica la matriz de asientos)
+# │   ├── e_validaciones.py     (Funciones con RegEx para validar DNI, fecha, email)
+# │   └── f_finanzas.py         (Cálculos de precios usando 'map' y 'reduce')
+# ├── anotaciones.md          <-- Notas temporales de desarrollo
+# └── instrucciones.md        <-- Guía de uso del sistema
 
 
 from b_info import catalogo_viajes
