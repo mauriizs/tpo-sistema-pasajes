@@ -9,10 +9,10 @@
 #     │-- busquedas.py        (Filter y catálogo - Integrante 4)
 #     └── finanzas.py         (Map, reduce y cálculos - Integrante 5)
 
-import busquedas
-import micro
-import validaciones
-import finanzas
+import b_validaciones
+import c_micro
+import d_busquedas
+import e_finanzas
 
 def main():
     print("--- SISTEMA DE VENTA DE PASAJES ---")
