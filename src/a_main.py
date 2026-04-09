@@ -13,10 +13,11 @@
 
 
 from b_info import mostrar_bienvenida
-from f_validaciones import validar_fecha, validar_dni, validar_opcion
-from c_micro import mostrar_asientos, reservar_lugar
+from c_micro import mostrar_micro, reservar_asiento
 from d_busquedas import catalogo_viajes, buscar_viajes
-from e_finanzas import calcular_recaudacion
+from e_finanzas import aplicar_recargo, calcular_recaudacion_total
+from f_validaciones import validar_fecha, validar_dni, validar_email
+
 
 def main():
     mostrar_bienvenida()
