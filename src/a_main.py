@@ -13,10 +13,10 @@
 
 
 from b_info import mostrar_bienvenida
-from c_micro import mostrar_micro, reservar_asiento
+from c_micro import mostrar_micro, asiento_esta_libre, reservar_asiento
 from d_busquedas import catalogo_viajes, buscar_viajes, buscar_por_id
 from e_finanzas import aplicar_recargo, calcular_recaudacion_total
-from f_validaciones import validar_fecha, validar_dni, validar_email
+from f_validaciones import validar_fecha, validar_dni, validar_email, validar_telefono
 
 
 def main():
@@ -67,7 +67,110 @@ def main():
             input("\n Presione [ENTER] para volver al menú...")
 
         elif opcion == "2":
-            print("\nLlamar a validaciones, micro y finanzas...")
+            print("\n╔════════════════════════════════════════════╗")
+            print("║               COMPRAR PASAJE               ║")
+            print("╚════════════════════════════════════════════╝")
+            
+            # PASO A: Ingresar ID
+            id_buscado = input("> Ingresá el ID del viaje deseado: ")
+            viaje = buscar_por_id(id_buscado) # Función de d_busquedas
+            
+            # Caso Borde: ID Inexistente
+            if not viaje:
+                print("\n[ERROR] El ID ingresado no existe en el catálogo. Operación cancelada.")
+                input("Presione [ENTER] para volver al menú...")
+                continue # Vuelve al Menú Principal
+                
+            empresa, destino, fecha, precio_base, matriz = viaje[1], viaje[3], viaje[4], viaje[5], viaje[6]
+            print(f"\nHas seleccionado: {destino} - {fecha} ({empresa})")
+            
+            # PASO B: Mapa de Asientos
+            while True:
+                mostrar_micro(matriz)
+                
+                fila_input = input("> Ingresá la fila (1-3) o '0' para cancelar: ")
+                if fila_input == "0":
+                    print("\n[INFO] Operación cancelada por el usuario.")
+                    break # Sale del bucle de compra y vuelve al menú
+                    
+                col_input = input("> Ingresá la columna (1-4) o '0' para cancelar: ")
+                if col_input == "0":
+                    print("\n[INFO] Operación cancelada por el usuario.")
+                    break
+                    
+                # Caso Borde: Validar que tipeó números y no letras
+                if not (fila_input.isdigit() and col_input.isdigit()):
+                    print("\n[ERROR] Debes ingresar números válidos.")
+                    continue
+                    
+                fila = int(fila_input)
+                columna = int(col_input)
+                
+                # Caso Borde: Asiento fuera de rango (1 a 3 filas, 1 a 4 columnas)
+                if not (1 <= fila <= 3 and 1 <= columna <= 4):
+                    print("\n[ERROR] Coordenadas fuera de rango. El micro tiene 3 filas y 4 columnas.")
+                    continue
+                
+                # DIAGRAMA: ¿Asiento Libre?
+                if not asiento_esta_libre(matriz, fila, columna):
+                    print("\n[ERROR] El asiento seleccionado ya está ocupado. Elegí otro.")
+                    continue # Vuelve a mostrar el mapa
+                    
+                print("\n------------------------------------------------------")
+                print("> [ OK ] Asiento disponible. Iniciando Check-in...")
+                print("------------------------------------------------------")
+                
+                # PASO C: Registro de Pasajeros (Validar con RegEx)
+                print("\nDATOS DEL PASAJERO")
+                dni_input = input("> Ingresá tu DNI (sin puntos): ")
+                dni = validar_dni(dni_input)
+                
+                email_input = input("> Ingresá tu Email: ")
+                email = validar_email(email_input)
+                
+                tel_input = input("> Ingresá tu Teléfono: ")
+                tel = validar_telefono(tel_input)
+                
+                print("\n[ PROCESANDO DATOS... POR FAVOR ESPERE ]")
+                
+                # PASO D: Liquidación y Emisión (Calcular recargo con map)
+                precio_final = aplicar_recargo(precio_base)
+                
+                print("\nRESUMEN DE COMPRA")
+                print(f"Pasajero: DNI {dni}")
+                print(f"Destino: {destino} | Fecha: {fecha}")
+                print(f"Asiento: Fila {fila}, Columna {columna}")
+                print(f"Precio Base: $ {precio_base:.2f}")
+                print(f"Cargo por servicio (16%): $ {precio_final - precio_base:.2f}")
+                print(f"TOTAL A PAGAR: $ {precio_final:.2f}")
+                
+                # DIAGRAMA: ¿Confirmar Compra?
+                confirmacion = input("\n> ¿Confirmar pago y emitir pasaje? (S/N): ").upper()
+                
+                if confirmacion == "S":
+                    # Actualizar Matriz (L -> O)
+                    reservar_asiento(matriz, fila, columna)
+                    
+                    # Guardar Venta en Memoria
+                    from e_finanzas import ventas_diarias
+                    ventas_diarias.append(precio_final)
+                    
+                    # Emitir Ticket
+                    print("\nPAGO EXITOSO. Generando pasaje...")
+                    print("========================================")
+                    print("     TICKET DE VIAJE CENTRAL MICRO      ")
+                    print("========================================")
+                    print(f" TITULAR DNI: {dni}")
+                    print(f" DESTINO: {destino} | FECHA: {fecha}")
+                    print(f" ASIENTO: Fila {fila} Columna {columna}")
+                    print(f" TOTAL: $ {precio_final:.2f}")
+                    print("========================================")
+                    print("              ¡BUEN VIAJE!              ")
+                else:
+                    print("\n[INFO] Operación cancelada. No se realizó ningún cargo.")
+                
+                input("\nPresione [ENTER] para volver al menú...")
+                break # Termina el proceso de compra exitoso o cancelado
             
         elif opcion == "3":
             print("\nLlamar a finanzas...")
