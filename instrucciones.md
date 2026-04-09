@@ -16,17 +16,18 @@ Flujo principal:
 ## 💾 Estructura de Datos (ESTRICTO)
 Para respetar las restricciones académicas, **NO SE DEBEN USAR DICCIONARIOS COMPLEJOS**. Toda la información en memoria debe estructurarse usando **Listas y Listas Anidadas**.
 
-### 1. Catálogo de Viajes (`lista_viajes`)
+### 1. Catálogo de Viajes (`catalogo_viajes`)
 Es una Lista de Listas. Cada sub-lista respeta estrictamente estos índices:
 * `[0]` -> ID del viaje (String, ej: "1")
-* `[1]` -> Origen (String)
-* `[2]` -> Destino (String)
-* `[3]` -> Fecha (String, formato DD/MM)
-* `[4]` -> Precio Base (Float o Int)
-* `[5]` -> Matriz de Asientos (Lista bidimensional de Strings: "L" para Libre, "O" para Ocupado)
+* `[1]` -> Empresa (String)
+* `[2]` -> Origen (String)
+* `[3]` -> Destino (String)
+* `[4]` -> Fecha (String, formato DD/MM)
+* `[5]` -> Precio Base (Float o Int)
+* `[6]` -> Matriz de Asientos (Lista bidimensional de Strings: "L" para Libre, "O" para Ocupado)
 
 **Ejemplo:**
-`viajes = [ ["1", "Buenos Aires", "Bariloche", "20/05", 50000, [["L", "O"], ["L", "L"]]] ]`
+`viajes = [ ["1", "Via Bariloche", "Buenos Aires", "Bariloche", "20/05", 50000, [["L", "O"], ["L", "L"]]] ]`
 
 ### 2. Registro de Ventas (`ventas_diarias`)
 Es una lista unidimensional simple que almacena números (floats/ints) correspondientes al precio final de cada pasaje vendido, para luego ser procesada. Ejemplo: `[58000, 45000]`

@@ -2,13 +2,12 @@
 # MÓDULO DE BÚSQUEDAS Y CATÁLOGO
 # ==========================================
 
-# Base de datos temporal (Lista de Listas)
-
-# Índices: [0]ID, [1]Origen, [2]Destino, [3]Fecha, [4]Precio, [5]Matriz de Asientos
+# Índices: [0]ID, [1]Empresa, [2]Origen, [3]Destino, [4]Fecha, [5]Precio, [6]Matriz de Asientos
 
 catalogo_viajes = [
     [
         "1", 
+        "Via Bariloche", 
         "Buenos Aires", 
         "Bariloche", 
         "20/05", 
@@ -21,6 +20,7 @@ catalogo_viajes = [
     ],
     [
         "2", 
+        "Andesmar", 
         "Buenos Aires", 
         "Mar del Plata", 
         "25/05", 
@@ -33,12 +33,13 @@ catalogo_viajes = [
     ],
     [
         "3", 
+        "Crucero Norte", 
         "Cordoba", 
         "Misiones", 
         "30/05", 
         45000.0, 
         [
-            ["O", "O", "O", "O"],  # Ejemplo de micro casi lleno
+            ["O", "O", "O", "O"], 
             ["O", "L", "O", "O"],
             ["O", "O", "O", "O"]
         ]
@@ -54,9 +55,9 @@ def buscar_viajes(origen_buscado, destino_buscado, fecha_buscada):
     # convertimos a minúsculas (.lower()) para evitar errores si el usuario escribe "bariloche" o "BARILOCHE"
     
     viajes_filtrados = list(filter(
-        lambda viaje: viaje[1].lower() == origen_buscado.lower() and 
-                      viaje[2].lower() == destino_buscado.lower() and 
-                      viaje[3] == fecha_buscada, 
+        lambda viaje: viaje[2].lower() == origen_buscado.lower() and 
+                      viaje[3].lower() == destino_buscado.lower() and 
+                      viaje[4] == fecha_buscada, 
         catalogo_viajes
     ))
     

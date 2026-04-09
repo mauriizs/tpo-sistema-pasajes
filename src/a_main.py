@@ -13,32 +13,73 @@
 
 
 from b_info import mostrar_bienvenida
-from f_validaciones import validar_dni, validar_opcion
+from f_validaciones import validar_fecha, validar_dni, validar_opcion
 from c_micro import mostrar_asientos, reservar_lugar
 from d_busquedas import catalogo_viajes, buscar_viajes
 from e_finanzas import calcular_recaudacion
 
 def main():
-    print("--- SISTEMA DE VENTA DE PASAJES ---")
+    mostrar_bienvenida()
+    
     while True:
-        print("\n1. Buscar Viaje")
-        print("2. Comprar Pasaje")
-        print("3. Ver Recaudación Total")
-        print("4. Salir")
+        print("\n-------- SISTEMA DE GESTION DE VENTAS --------")
+        print(" [1] Buscar viaje         [2] Comprar pasaje ")
+        print(" [3] Ver recaudacion      [4] Salir")
+        print("----------------------------------------------")
         
-        opcion = input("Elegí una opción: ")
+        opcion = input("\n> Selecciona una opcion: ")
         
         if opcion == "1":
-            print("Llamar a busquedas...")
+            print("\n╔════════════════════════════════════════════╗")
+            print("║             BUSCADOR DE VIAJES             ║")
+            print("╚════════════════════════════════════════════╝")
+            
+            origen = input("> Ingresá el origen: ")
+            destino = input("> Ingresá el destino: ")
+            
+            fecha_input = input("> Ingresá la fecha (dd/mm): ")
+            fecha_validada = validar_fecha(fecha_input)
+            
+            # Llamamos al filter() que está en d_busquedas.py
+            resultados = buscar_viajes(origen, destino, fecha_validada)
+            
+            print("\n ----------------------------------------------")
+            print("           RESULTADOS ENCONTRADOS:           ")
+            print(" ----------------------------------------------\n")
+
+            if len(resultados) > 0:
+                print("  ID | EMPRESA        | FECHA | PRECIO BASE")
+                print("  ---|----------------|-------|------------")
+                for viaje in resultados:
+                    # viaje[0]: ID, viaje[1]: Empresa, viaje[4]: Fecha, viaje[5]: Precio
+                    id_v = str(viaje[0]).zfill(2)
+                    empresa = f"{viaje[1]:<14}" 
+                    fecha = viaje[4]
+                    precio = f"$ {viaje[5]:>6}"
+                    
+                    print(f"  {id_v} | {empresa} | {fecha} | {precio}")
+    
+                print("\n ----------------------------------------------")
+            else:
+                print(" [ERROR] No se encontraron viajes para los datos ingresados.")
+            
+            input("\n Presione [ENTER] para volver al menú...")
+
         elif opcion == "2":
-            print("Llamar a validaciones, micro y finanzas...")
+            print("\nLlamar a validaciones, micro y finanzas...")
+            
         elif opcion == "3":
-            print("Llamar a finanzas...")
+            print("\nLlamar a finanzas...")
+            
         elif opcion == "4":
-            print("Saliendo del sistema...")
+            print("\nCerrando sistema. ¡Hasta luego!")
             break
+            
         else:
-            print("Opción no válida.")
+            print("\nOpción no válida.")
+
+
 
 if __name__ == "__main__":
     main()
+
