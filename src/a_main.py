@@ -72,13 +72,15 @@ def main():
             print("╚════════════════════════════════════════════╝")
             
             # PASO A: Ingresar ID
-            id_buscado = input("> Ingresá el ID del viaje deseado: ")
+            id_buscado = input("\n> Ingresá el ID del viaje deseado: ")
             viaje = buscar_por_id(id_buscado) # Función de d_busquedas
             
             # Caso Borde: ID Inexistente
             if not viaje:
-                print("\n[ERROR] El ID ingresado no existe en el catálogo. Operación cancelada.")
-                input("Presione [ENTER] para volver al menú...")
+                print("\n ----------------------------------------------")
+                print(" [ ERROR ] El ID ingresado no existe en el catálogo.")
+                print(" ----------------------------------------------\n")
+                input(" Presione [ENTER] para volver al menú...")
                 continue # Vuelve al Menú Principal
                 
             empresa, destino, fecha, precio_base, matriz = viaje[1], viaje[3], viaje[4], viaje[5], viaje[6]
@@ -90,17 +92,23 @@ def main():
                 
                 fila_input = input("> Ingresá la fila (1-3) o '0' para cancelar: ")
                 if fila_input == "0":
-                    print("\n[INFO] Operación cancelada por el usuario.")
+                    print("\n ----------------------------------------------")
+                    print(" [ INFO ] Operación cancelada por el usuario.")
+                    print(" ----------------------------------------------\n")
                     break # Sale del bucle de compra y vuelve al menú
                     
                 col_input = input("> Ingresá la columna (1-4) o '0' para cancelar: ")
                 if col_input == "0":
-                    print("\n[INFO] Operación cancelada por el usuario.")
+                    print("\n ----------------------------------------------")
+                    print(" [ INFO ] Operación cancelada por el usuario.")
+                    print(" ----------------------------------------------\n")
                     break
                     
                 # Caso Borde: Validar que tipeó números y no letras
                 if not (fila_input.isdigit() and col_input.isdigit()):
-                    print("\n[ERROR] Debes ingresar números válidos.")
+                    print("\n ------------------------------------------------------")
+                    print(" [ ERROR ] Debes ingresar números válidos.")
+                    print(" ------------------------------------------------------\n")
                     continue
                     
                 fila = int(fila_input)
@@ -108,12 +116,16 @@ def main():
                 
                 # Caso Borde: Asiento fuera de rango (1 a 3 filas, 1 a 4 columnas)
                 if not (1 <= fila <= 3 and 1 <= columna <= 4):
-                    print("\n[ERROR] Coordenadas fuera de rango. El micro tiene 3 filas y 4 columnas.")
+                    print("\n ------------------------------------------------------")
+                    print(" [ ERROR ] Coordenadas fuera de rango. El micro tiene 3 filas y 4 columnas.")
+                    print(" ------------------------------------------------------\n")
                     continue
                 
                 # DIAGRAMA: ¿Asiento Libre?
                 if not asiento_esta_libre(matriz, fila, columna):
-                    print("\n[ERROR] El asiento seleccionado ya está ocupado. Elegí otro.")
+                    print("\n ------------------------------------------------------")
+                    print(" [ ERROR ] El asiento seleccionado ya está ocupado.")
+                    print(" ------------------------------------------------------\n")
                     continue # Vuelve a mostrar el mapa
                     
                 print("\n------------------------------------------------------")
@@ -121,7 +133,10 @@ def main():
                 print("------------------------------------------------------")
                 
                 # PASO C: Registro de Pasajeros (Validar con RegEx)
-                print("\nDATOS DEL PASAJERO")
+                print("        ╔══════════════════════════════════════╗")
+                print("        ║          DATOS DEL PASAJERO          ║")
+                print("        ╚══════════════════════════════════════╝\n")
+
                 dni_input = input("> Ingresá tu DNI (sin puntos): ")
                 dni = validar_dni(dni_input)
                 
@@ -131,18 +146,20 @@ def main():
                 tel_input = input("> Ingresá tu Teléfono: ")
                 tel = validar_telefono(tel_input)
                 
-                print("\n[ PROCESANDO DATOS... POR FAVOR ESPERE ]")
+                print("\n ------------------------------------------------------")
+                print("        [ PROCESANDO DATOS... POR FAVOR ESPERE ]")
+                print(" ------------------------------------------------------\n")
                 
                 # PASO D: Liquidación y Emisión (Calcular recargo con map)
                 precio_final = aplicar_recargo(precio_base)
                 
-                print("\nRESUMEN DE COMPRA")
-                print(f"Pasajero: DNI {dni}")
-                print(f"Destino: {destino} | Fecha: {fecha}")
-                print(f"Asiento: Fila {fila}, Columna {columna}")
-                print(f"Precio Base: $ {precio_base:.2f}")
-                print(f"Cargo por servicio (16%): $ {precio_final - precio_base:.2f}")
-                print(f"TOTAL A PAGAR: $ {precio_final:.2f}")
+                # Armamos las líneas del ticket con espacios fijos (42 caracteres de ancho interno)
+                l1 = f"Pasajero: DNI {dni}"
+                l2 = f"Destino:  {destino} | Fecha: {fecha}"
+                l3 = f"Asiento:  Fila {fila}, Columna {columna}"
+                l4 = f"Precio Base:              $ {precio_base:>8.2f}"
+                l5 = f"Cargo por servicio (16%): $ {recargo:>8.2f}"
+                l6 = f"TOTAL A PAGAR:            $ {precio_final:>8.2f}"
                 
                 # DIAGRAMA: ¿Confirmar Compra?
                 confirmacion = input("\n> ¿Confirmar pago y emitir pasaje? (S/N): ").upper()
