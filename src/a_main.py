@@ -14,7 +14,7 @@
 
 from b_info import mostrar_bienvenida
 from c_micro import mostrar_micro, reservar_asiento
-from d_busquedas import catalogo_viajes, buscar_viajes
+from d_busquedas import catalogo_viajes, buscar_viajes, buscar_por_id
 from e_finanzas import aplicar_recargo, calcular_recaudacion_total
 from f_validaciones import validar_fecha, validar_dni, validar_email
 

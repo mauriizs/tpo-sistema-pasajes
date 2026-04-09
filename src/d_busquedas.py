@@ -1,8 +1,9 @@
 # ==========================================
-# MÓDULO DE BÚSQUEDAS Y CATÁLOGO
+# 1. BASE DE DATOS EN MEMORIA (El Catálogo)
 # ==========================================
 
-# Índices: [0]ID, [1]Empresa, [2]Origen, [3]Destino, [4]Fecha, [5]Precio, [6]Matriz de Asientos
+# Estructura de cada viaje (Lista anidada).
+# indices: [0]ID, [1]Empresa, [2]Origen, [3]Destino, [4]Fecha, [5]Precio, [6]Matriz de Asientos
 
 catalogo_viajes = [
     [
@@ -46,13 +47,13 @@ catalogo_viajes = [
     ]
 ]
 
+# ==================================================
+# 2. FUNCIONES DE BÚSQUEDA (Programación Funcional)
+# ==================================================
+
 def buscar_viajes(origen_buscado, destino_buscado, fecha_buscada):
-    """
-    Filtra el catálogo buscando coincidencias exactas de origen, destino y fecha.
-    Retorna una lista con los viajes encontrados.
-    """
-    # Explicación: Usamos filter con una lambda que revisa los índices [1], [2] y [3]
-    # convertimos a minúsculas (.lower()) para evitar errores si el usuario escribe "bariloche" o "BARILOCHE"
+
+    '''Filtra el catálogo buscando coincidencias exactas de origen, destino y fecha. Retorna una lista con los viajes encontrados.'''
     
     viajes_filtrados = list(filter(
         lambda viaje: viaje[2].lower() == origen_buscado.lower() and 
@@ -62,3 +63,23 @@ def buscar_viajes(origen_buscado, destino_buscado, fecha_buscada):
     ))
     
     return viajes_filtrados
+
+    # 1. Usamos filter con una funcion lambda que revisa los índices [1], [2] y [3]
+    # 2. Convertimos a minúsculas (.lower()) para evitar errores si el usuario escribe "bariloche" o "BARILOCHE"
+
+
+def buscar_por_id(id_viaje):  
+    
+    '''Busca un viaje específico por su ID'''
+
+    viaje_encontrado = filter(lambda viaje: viaje[0] == id_viaje, catalogo_viajes) 
+    resultados = list(viaje_encontrado)
+
+    if len(resultados) > 0: 
+        return resultados[0]
+    else:
+        return None
+    
+    # 1. Primero filtramos el catálogo por ID, luego convertimos el resultado a lista para verificar si encontramos algo. 
+    # 2. Si la lista tiene elementos, devolvemos el primero (único) resultado. Si no encontramos nada, devolvemos None para indicar que no existe ese ID.
+
