@@ -4,8 +4,8 @@
 # ├── src/                    <-- Carpeta de código fuente
 # │   ├── a_main.py             (El Menú principal que une todo el programa)
 # │   ├── b_info.py             (Muestra los datos y bienvenida de la agencia)
-# │   ├── c_busquedas.py        (Tiene el catálogo de viajes y usa 'filter')
-# │   ├── d_micro.py            (Crea, muestra y modifica la matriz de asientos)
+# │   ├── c_micro.py            (Crea, muestra y modifica la matriz de asientos)
+# │   ├── d_busquedas.py        (Tiene el catálogo de viajes y usa 'filter')
 # │   ├── e_validaciones.py     (Funciones con RegEx para validar DNI, fecha, email)
 # │   └── f_finanzas.py         (Cálculos de precios usando 'map' y 'reduce')
 # ├── anotaciones.md          <-- Notas temporales de desarrollo
@@ -183,7 +183,6 @@ def main():
                     reservar_asiento(matriz, fila, columna)
                     
                     # Guardar Venta en Memoria
-                    from e_finanzas import ventas_diarias
                     ventas_diarias.append(precio_final)
                     
                     # Emitir Ticket
