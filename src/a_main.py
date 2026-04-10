@@ -216,21 +216,25 @@ def main():
             total_caja = calcular_recaudacion_total(ventas_diarias)
             cantidad_pasajes = len(ventas_diarias)
             
-            print("\n╔════════════════════════════════════════════╗")
-            print("║           REPORTE DE CAJA DIARIA           ║")
-            print("╚════════════════════════════════════════════╝")
+            print("\n ╔════════════════════════════════════════════╗")
+            print(" ║          REPORTE DE CAJA DIARIA            ║")
+            print(" ╚════════════════════════════════════════════╝\n")
             
-            print("\n ------------------------------------------------------")
-            print("        [ CALCULANDO VENTAS REGISTRADAS... ]")
-            print(" ------------------------------------------------------\n")
-            
-            print(" RESUMEN DEL DÍA:")
-            print(f" > Pasajes vendidos:  {cantidad_pasajes:02d}")
-            print(f" > Recaudación total: $ {total_caja:.2f}\n")
+            print(" [ CALCULANDO VENTAS REGISTRADAS... ]\n")
             
             print(" ----------------------------------------------")
-            print(f"  TOTAL CAJA:         $ {total_caja:.2f}")
+            print("   RESUMEN DEL DÍA:")
+            print(" ----------------------------------------------")
+            print(f" > Pasajes vendidos: {cantidad_pasajes:02d}")
+            print(f" > Recaudación total: $ {total_caja:.2f}")
             print(" ----------------------------------------------\n")
+            
+            # Armamos el texto del total y lo rellenamos para que la caja no se deforme
+            texto_caja = f"TOTAL CAJA:      $ {total_caja:.2f}"
+            
+            print("        ╔══════════════════════════════╗")
+            print(f"        ║ {texto_caja:<28} ║")
+            print("        ╚══════════════════════════════╝\n")
             
             input(" Presione [ENTER] para volver al menú...")
             
