@@ -15,7 +15,7 @@
 from b_info import mostrar_bienvenida
 from c_micro import mostrar_micro, asiento_esta_libre, reservar_asiento
 from d_busquedas import catalogo_viajes, buscar_viajes, buscar_por_id
-from e_finanzas import aplicar_recargo, calcular_recaudacion_total
+from e_finanzas import aplicar_recargo, calcular_recaudacion_total, ventas_diarias
 from f_validaciones import validar_fecha, validar_dni, validar_email, validar_telefono
 
 
@@ -35,7 +35,7 @@ def main():
             print("║             BUSCADOR DE VIAJES             ║")
             print("╚════════════════════════════════════════════╝")
             
-            origen = input("> Ingresá el origen: ")
+            origen = input("\n> Ingresá el origen: ")
             destino = input("> Ingresá el destino: ")
             
             fecha_input = input("> Ingresá la fecha (dd/mm): ")
@@ -86,7 +86,7 @@ def main():
             empresa, destino, fecha, precio_base, matriz = viaje[1], viaje[3], viaje[4], viaje[5], viaje[6]
             print(f"\nHas seleccionado: {destino} - {fecha} ({empresa})")
             
-            # PASO B: Mapa de Asientos
+            # PASO B: Mapa de Asientos        
             while True:
                 mostrar_micro(matriz)
                 
@@ -109,7 +109,7 @@ def main():
                     print("\n ------------------------------------------------------")
                     print(" [ ERROR ] Debes ingresar números válidos.")
                     print(" ------------------------------------------------------\n")
-                    continue
+                    continue    
                     
                 fila = int(fila_input)
                 columna = int(col_input)
@@ -130,7 +130,7 @@ def main():
                     
                 print("\n------------------------------------------------------")
                 print("> [ OK ] Asiento disponible. Iniciando Check-in...")
-                print("------------------------------------------------------")
+                print("------------------------------------------------------\n")
                 
                 # PASO C: Registro de Pasajeros (Validar con RegEx)
                 print("        ╔══════════════════════════════════════╗")
@@ -152,6 +152,7 @@ def main():
                 
                 # PASO D: Liquidación y Emisión (Calcular recargo con map)
                 precio_final = aplicar_recargo(precio_base)
+                recargo = precio_final - precio_base
                 
                 # Armamos las líneas del ticket con espacios fijos (42 caracteres de ancho interno)
                 l1 = f"Pasajero: DNI {dni}"
@@ -161,6 +162,19 @@ def main():
                 l5 = f"Cargo por servicio (16%): $ {recargo:>8.2f}"
                 l6 = f"TOTAL A PAGAR:            $ {precio_final:>8.2f}"
                 
+                print("╔════════════════════════════════════════════╗")
+                print("║             RESUMEN DE COMPRA              ║")
+                print("╠════════════════════════════════════════════╣")
+                print(f"║ {l1:<42} ║")
+                print(f"║ {l2:<42} ║")
+                print(f"║ {l3:<42} ║")
+                print("╠════════════════════════════════════════════╣")
+                print(f"║ {l4:<42} ║")
+                print(f"║ {l5:<42} ║")
+                print("║ ------------------------------------------ ║")
+                print(f"║ {l6:<42} ║")
+                print("╚════════════════════════════════════════════╝\n")
+
                 # DIAGRAMA: ¿Confirmar Compra?
                 confirmacion = input("\n> ¿Confirmar pago y emitir pasaje? (S/N): ").upper()
                 
@@ -173,27 +187,64 @@ def main():
                     ventas_diarias.append(precio_final)
                     
                     # Emitir Ticket
-                    print("\nPAGO EXITOSO. Generando pasaje...")
-                    print("========================================")
-                    print("     TICKET DE VIAJE CENTRAL MICRO      ")
-                    print("========================================")
-                    print(f" TITULAR DNI: {dni}")
-                    print(f" DESTINO: {destino} | FECHA: {fecha}")
-                    print(f" ASIENTO: Fila {fila} Columna {columna}")
-                    print(f" TOTAL: $ {precio_final:.2f}")
-                    print("========================================")
-                    print("              ¡BUEN VIAJE!              ")
+                    t1 = f"TITULAR DNI: {dni}"
+                    t2 = f"DESTINO:     {destino} | FECHA: {fecha}"
+                    t3 = f"ASIENTO:     Fila {fila} - Columna {columna}"
+                    t4 = f"TOTAL:       $ {precio_final:.2f}"
+                    
+                    print("\n PAGO EXITOSO - Generando pasaje...\n")
+                    print(" ╔══════════════════════════════════════════╗")
+                    print(" ║      TICKET DE VIAJE - CENTRAL MICRO     ║")
+                    print(" ╠══════════════════════════════════════════╣")
+                    print(f" ║ {t1:<40} ║")
+                    print(f" ║ {t2:<40} ║")
+                    print(f" ║ {t3:<40} ║")
+                    print(f" ║ {t4:<40} ║")
+                    print(" ╠══════════════════════════════════════════╣")
+                    print(" ║              ¡BUEN VIAJE!                ║")
+                    print(" ╚══════════════════════════════════════════╝")
                 else:
-                    print("\n[INFO] Operación cancelada. No se realizó ningún cargo.")
+                    print("\n ----------------------------------------------")
+                    print(" [ INFO ] Operación cancelada. No se cobró nada.")
+                    print(" ----------------------------------------------")
                 
                 input("\nPresione [ENTER] para volver al menú...")
                 break # Termina el proceso de compra exitoso o cancelado
             
         elif opcion == "3":
-            print("\nLlamar a finanzas...")
+                
+            # Usamos la función con reduce() que armamos en finanzas
+            total_caja = calcular_recaudacion_total(ventas_diarias)
+            cantidad_pasajes = len(ventas_diarias)
+            
+            print("\n╔════════════════════════════════════════════╗")
+            print("║           REPORTE DE CAJA DIARIA           ║")
+            print("╚════════════════════════════════════════════╝")
+            
+            print("\n ------------------------------------------------------")
+            print("        [ CALCULANDO VENTAS REGISTRADAS... ]")
+            print(" ------------------------------------------------------\n")
+            
+            print(" RESUMEN DEL DÍA:")
+            print(f" > Pasajes vendidos:  {cantidad_pasajes:02d}")
+            print(f" > Recaudación total: $ {total_caja:.2f}\n")
+            
+            print(" ----------------------------------------------")
+            print(f"  TOTAL CAJA:         $ {total_caja:.2f}")
+            print(" ----------------------------------------------\n")
+            
+            input(" Presione [ENTER] para volver al menú...")
+            
             
         elif opcion == "4":
-            print("\nCerrando sistema. ¡Hasta luego!")
+            print("\n ----------------------------------------------")
+            print("    Cerrando sistema... ¡Hasta luego!")
+            print(" ----------------------------------------------\n")
+            print(" ╔════════════════════════════════════════════╗")
+            print(" ║        GRACIAS POR USAR CENTRAL BUS        ║")
+            print(" ║          SISTEMA FINALIZADO - 2026         ║")
+            print(" ╚════════════════════════════════════════════╝\n")
+            print(" Proceso finalizado.")
             break
             
         else:
