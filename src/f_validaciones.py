@@ -1,12 +1,17 @@
 import re
 
-def validar_fecha(fecha_ingresada): 
+def validar_fecha(fecha_ingresada):
+    dias_maximos = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    
     while True:
         # RegEx: Formato DD/MM, donde DD es 01-31 y MM es 01-12
         if re.match(r'^\d{2}/\d{2}$', fecha_ingresada): 
             dia, mes = map(int, fecha_ingresada.split('/'))
-            if 1 <= dia <= 31 and 1 <= mes <= 12:
-                return fecha_ingresada
+            
+            if 1 <= mes <= 12:
+                if 1 <= dia <= dias_maximos[mes - 1]:
+                    return fecha_ingresada
+                
         print("\n ------------------------------------------------------")
         print(" [ ERROR ] Fecha no válida. Ingresá en formato DD/MM. ")
         print(" ------------------------------------------------------\n")
