@@ -44,6 +44,32 @@ catalogo_viajes = [
             ["O", "L", "O", "O"],
             ["O", "O", "O", "O"]
         ]
+    ],
+    [
+        "4", 
+        "Crucero Norte", 
+        "Mendoza", 
+        "Buenos Aires", 
+        "05/06", 
+        42000.0, 
+        [
+            ["O", "O", "O", "O"], 
+            ["O", "L", "O", "O"],
+            ["O", "O", "O", "O"]
+        ]
+    ],
+    [
+        "5", 
+        "Via Bariloche", 
+        "Salta", 
+        "Cordoba", 
+        "10/06", 
+        55000.0, 
+        [
+            ["O", "O", "L", "O"], 
+            ["O", "O", "O", "O"],
+            ["O", "O", "L", "O"]
+        ]
     ]
 ]
 

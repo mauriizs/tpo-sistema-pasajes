@@ -6,7 +6,7 @@ def mostrar_micro(matriz_micro):
     
     '''Recibe la lista de listas del viaje seleccionado y la imprime con el formato visual de consola.'''
 
-    print("\n        ╔══════════════════════════════════════╗")
+    print("\n      ╔══════════════════════════════════════╗")
     print("        ║            MAPA DE ASIENTOS          ║")
     print("        ╚══════════════════════════════════════╝\n")
     print("           [ COL 1 ] [ COL 2 ]     [ COL 3 ] [ COL 4 ]")
