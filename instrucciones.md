@@ -67,7 +67,7 @@ Al sugerir código para la entrada de datos, siempre debes contemplar estas vali
 Generar funciones puras y con una única responsabilidad. Los módulos son:
 * `a_main.py`: Punto de entrada, contiene el `while True` del Menú y llama a las demás funciones.
 * `b_info.py`: Imprime los datos estáticos de la agencia.
-* `c_busquedas.py`: Contiene la variable del catálogo hardcodeado y las funciones que usan `filter()`.
-* `d_micro.py`: Funciones para imprimir la matriz de asientos formateada y actualizar un asiento de "L" a "O".
+* `c_micro.py`: Funciones para imprimir la matriz de asientos formateada y actualizar un asiento de "L" a "O".
+* `d_busquedas.py`: Contiene la variable del catálogo hardcodeado y las funciones que usan `filter()`.
 * `e_validaciones.py`: Todas las funciones que usan `re.match` o `re.fullmatch` (fechas, DNI, emails, limpieza de inputs).
 * `f_finanzas.py`: Funciones económicas (`map` para recargos y `reduce` para totalizar caja).
