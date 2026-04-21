@@ -45,7 +45,7 @@ def validar_email(email_ingresado):
 
     """
     Valida el email ingresado por el usuario.
-    Asegura que el email tenga un formato básico de  email@dominio.com
+    Asegura que el email tenga un formato básico de email@dominio.com
     """
     
     while True:
