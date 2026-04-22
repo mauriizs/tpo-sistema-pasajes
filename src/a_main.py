@@ -244,7 +244,7 @@ def main():
             print("    Cerrando sistema... ¡Hasta luego!")
             print(" ----------------------------------------------\n")
             print(" ╔════════════════════════════════════════════╗")
-            print(" ║        GRACIAS POR USAR CENTRAL BUS        ║")
+            print(" ║        GRACIAS POR USAR NEXUS VIAJES       ║")
             print(" ║          SISTEMA FINALIZADO - 2026         ║")
             print(" ╚════════════════════════════════════════════╝\n")
             print(" Proceso finalizado.")
