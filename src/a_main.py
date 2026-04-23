@@ -1,4 +1,5 @@
 # estructura del trabajo.
+
 # tpo-sistema-pasajes/
 # ├── docs/                   <-- Acá irá el PDF con la documentación final
 # ├── src/                    <-- Carpeta de código fuente
