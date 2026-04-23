@@ -8,8 +8,7 @@
 # │   ├── d_busquedas.py        (Tiene el catálogo de viajes y usa 'filter')
 # │   ├── e_validaciones.py     (Funciones con RegEx para validar DNI, fecha, email)
 # │   └── f_finanzas.py         (Cálculos de precios usando 'map' y 'reduce')
-# ├── anotaciones.md          <-- Notas temporales de desarrollo
-# └── instrucciones.md        <-- Guía de uso del sistema
+
 
 
 from b_info import mostrar_bienvenida
