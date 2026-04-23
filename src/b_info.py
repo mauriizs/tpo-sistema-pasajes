@@ -9,7 +9,10 @@ def mostrar_bienvenida():
 ║  EMAIL:     soporte@nexus-viajes.com       ║
 ╠════════════════════════════════════════════╣
 ║  DESTINOS:                                 ║
-║  - Bariloche         - Buenos Aires        ║
-║  - Mar del Plata     - Misiones            ║
+║  - Bariloche         - Mar del Plata       ║
+║  - Buenos Aires      - Mendoza             ║
+║  - Cordoba           - Misiones            ║
+║  - Rosario           - Salta               ║
+║  - Tucuman           - Tierra del Fuego    ║
 ╚════════════════════════════════════════════╝
 """)
