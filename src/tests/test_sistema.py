@@ -21,6 +21,7 @@ import validaciones
 import finanzas
 import asientos
 import logica_usuarios
+import logica_viajes
 
 
 class TestValidaciones(unittest.TestCase):
@@ -339,6 +340,157 @@ class TestUsuarios(unittest.TestCase):
         lista = logica_usuarios.listar_usuarios(usuarios)
         self.assertEqual(len(lista), 3)
         self.assertIn(("vende1", "boletero", "activo"), lista)
+
+
+class TestViajes(unittest.TestCase):
+    """Casos del Dominio (Capa 3): reglas de viajes. Cada test arma sus dicts."""
+
+    def _viajes_de_juguete(self):
+        return {
+            "V001": {"empresa": "Via Bariloche", "origen": "Buenos Aires",
+                     "destino": "bariloche", "fecha": "20/05/2026", "hora": "14:30",
+                     "precio_base": 50000.0, "estado": "activo"},
+            "V002": {"empresa": "Andesmar", "origen": "Buenos Aires",
+                     "destino": "bariloche", "fecha": "21/05/2026", "hora": "10:00",
+                     "precio_base": 48000.0, "estado": "activo"},
+            "V003": {"empresa": "Flecha Bus", "origen": "Cordoba",
+                     "destino": "mendoza", "fecha": "22/05/2026", "hora": "08:00",
+                     "precio_base": 30000.0, "estado": "cancelado"},
+        }
+
+    # ---- proximo_id_viaje ----
+    def test_proximo_id_con_viajes(self):
+        viajes = self._viajes_de_juguete()
+        self.assertEqual(logica_viajes.proximo_id_viaje(viajes), "V004")
+
+    def test_proximo_id_vacio(self):
+        self.assertEqual(logica_viajes.proximo_id_viaje({}), "V001")
+
+    def test_proximo_id_usa_maximo_no_cantidad(self):
+        # Con huecos (falta V002), el próximo es max+1, no cantidad+1
+        viajes = {"V001": {}, "V005": {}}
+        self.assertEqual(logica_viajes.proximo_id_viaje(viajes), "V006")
+
+    # ---- alta_viaje ----
+    def test_alta_viaje_normaliza_destino(self):
+        viajes = {}
+        exito, nuevo_id = logica_viajes.alta_viaje(
+            viajes, "Via Bariloche", "  Buenos Aires ", "  BARILOCHE ",
+            "20/05/2026", "14:30", 50000.0)
+        self.assertTrue(exito)
+        self.assertEqual(nuevo_id, "V001")
+        self.assertEqual(viajes["V001"]["destino"], "bariloche")  # normalizado
+        self.assertEqual(viajes["V001"]["origen"], "Buenos Aires")  # solo strip
+        self.assertEqual(viajes["V001"]["estado"], "activo")
+
+    # ---- modificar_viaje ----
+    def test_modificar_solo_campos_dados(self):
+        viajes = self._viajes_de_juguete()
+        exito, _ = logica_viajes.modificar_viaje(
+            viajes, "V001", empresa="Nueva Empresa", fecha=None,
+            hora=None, precio_base=60000.0)
+        self.assertTrue(exito)
+        self.assertEqual(viajes["V001"]["empresa"], "Nueva Empresa")
+        self.assertEqual(viajes["V001"]["precio_base"], 60000.0)
+        self.assertEqual(viajes["V001"]["fecha"], "20/05/2026")  # None → sin cambio
+
+    def test_modificar_no_toca_origen_destino(self):
+        viajes = self._viajes_de_juguete()
+        logica_viajes.modificar_viaje(viajes, "V001", "X", None, None, None)
+        self.assertEqual(viajes["V001"]["origen"], "Buenos Aires")
+        self.assertEqual(viajes["V001"]["destino"], "bariloche")
+
+    def test_modificar_inexistente(self):
+        viajes = self._viajes_de_juguete()
+        exito, _ = logica_viajes.modificar_viaje(viajes, "V999", "X", None, None, None)
+        self.assertFalse(exito)
+
+    # ---- viaje_tiene_ventas / cancelar_o_borrar_viaje ----
+    def test_borrar_viaje_sin_ventas(self):
+        viajes = self._viajes_de_juguete()
+        exito, _ = logica_viajes.cancelar_o_borrar_viaje(viajes, {}, "V001")
+        self.assertTrue(exito)
+        self.assertNotIn("V001", viajes)  # borrado físico
+
+    def test_cancelar_viaje_con_ventas(self):
+        viajes = self._viajes_de_juguete()
+        ventas = {"T0001": {"id_viaje": "V001", "dni": "1", "fila": 1, "columna": 1}}
+        exito, _ = logica_viajes.cancelar_o_borrar_viaje(viajes, ventas, "V001")
+        self.assertTrue(exito)
+        self.assertIn("V001", viajes)  # NO se borra
+        self.assertEqual(viajes["V001"]["estado"], "cancelado")
+
+    def test_cancelar_inexistente(self):
+        viajes = self._viajes_de_juguete()
+        exito, _ = logica_viajes.cancelar_o_borrar_viaje(viajes, {}, "V999")
+        self.assertFalse(exito)
+
+    # ---- ventas_de_viaje ----
+    def test_ventas_de_viaje_filtra(self):
+        ventas = {
+            "T0001": {"id_viaje": "V001", "dni": "1", "fila": 1, "columna": 1},
+            "T0002": {"id_viaje": "V002", "dni": "2", "fila": 1, "columna": 1},
+            "T0003": {"id_viaje": "V001", "dni": "3", "fila": 1, "columna": 2},
+        }
+        self.assertEqual(len(logica_viajes.ventas_de_viaje(ventas, "V001")), 2)
+
+    # ---- buscar_viajes ----
+    def test_buscar_por_destino_normalizado(self):
+        viajes = self._viajes_de_juguete()
+        # "Bariloche" matchea los dos viajes a bariloche (match exacto normalizado)
+        resultado = logica_viajes.buscar_viajes(
+            viajes, {}, origen=None, destino="Bariloche", fecha=None,
+            solo_vendibles=False)
+        self.assertEqual(len(resultado), 2)
+
+    def test_buscar_solo_vendibles_oculta_cancelado(self):
+        viajes = self._viajes_de_juguete()
+        # V003 está cancelado → no aparece en vista vendible
+        resultado = logica_viajes.buscar_viajes(
+            viajes, {}, None, None, None, solo_vendibles=True)
+        ids = [v["id_viaje"] for v in resultado]
+        self.assertNotIn("V003", ids)
+        self.assertEqual(len(resultado), 2)
+
+    def test_buscar_admin_ve_cancelado(self):
+        viajes = self._viajes_de_juguete()
+        resultado = logica_viajes.buscar_viajes(
+            viajes, {}, None, None, None, solo_vendibles=False)
+        self.assertEqual(len(resultado), 3)
+
+    def test_buscar_enriquece_con_ocupacion_y_libres(self):
+        viajes = self._viajes_de_juguete()
+        # Una venta en V001 → 1 ocupado de 20 → 5% de ocupación, 19 libres
+        ventas = {"T0001": {"id_viaje": "V001", "dni": "1", "fila": 1, "columna": 1}}
+        resultado = logica_viajes.buscar_viajes(
+            viajes, ventas, None, None, None, solo_vendibles=False)
+        v001 = next(v for v in resultado if v["id_viaje"] == "V001")
+        self.assertEqual(v001["libres"], 19)
+        self.assertEqual(v001["ocupacion"], 5)
+
+    def test_buscar_vendible_oculta_lleno(self):
+        # Un viaje sin asientos libres no es vendible
+        viajes = {"V001": {"empresa": "X", "origen": "A", "destino": "b",
+                           "fecha": "20/05/2026", "hora": "10:00",
+                           "precio_base": 100.0, "estado": "activo"}}
+        # Llenar los 20 asientos
+        ventas = {}
+        n = 0
+        for fila in range(1, 6):
+            for col in range(1, 5):
+                n += 1
+                ventas[f"T{n:04d}"] = {"id_viaje": "V001", "dni": str(n),
+                                       "fila": fila, "columna": col}
+        resultado = logica_viajes.buscar_viajes(
+            viajes, ventas, None, None, None, solo_vendibles=True)
+        self.assertEqual(len(resultado), 0)
+
+    # ---- destinos_activos_unicos ----
+    def test_destinos_activos_unicos_dedup(self):
+        viajes = self._viajes_de_juguete()
+        # Dos viajes a "bariloche" (activos) → un solo destino. "mendoza" cancelado → fuera.
+        destinos = logica_viajes.destinos_activos_unicos(viajes)
+        self.assertEqual(destinos, {"bariloche"})
 
 
 if __name__ == "__main__":
