@@ -13,5 +13,6 @@ Si necesitás modificar algo que ya funciona, explicame por qué antes de tocarl
 Código en Python, comentarios en español, sin over-engineering, ya esta todo diseñado, solo hay que implementarlo.
 
 No modifiques NUNCA material/arquitectura-v3.md, es de solo lectura. Justamente fue diseñado para que entiendas la arquitectura y sepas hacia donde vamos. 
+Usalo de referencia para chequear que los nombres de las funciones y los tipos de datos coincidan siempre, asegurando que el módulo enganche bien con el resto del sistema.
 
 Al cerrar la sesión, actualizá material/sesion-anterior.md con lo que hicimos. Solo lo que hicimos, no lo que falta por hacer. Esto es para que la próxima vez que volvamos a trabajar, sepamos dónde quedamos. Yo te voy a avisar cuando terminemos la sesión, así que no te preocupes por eso.
