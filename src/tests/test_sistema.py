@@ -20,6 +20,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import validaciones
 import finanzas
 import asientos
+import logica_usuarios
 
 
 class TestValidaciones(unittest.TestCase):
@@ -201,6 +202,143 @@ class TestAsientos(unittest.TestCase):
 
     def test_dnis_del_viaje_vacio(self):
         self.assertEqual(asientos.dnis_del_viaje([]), set())
+
+
+class TestUsuarios(unittest.TestCase):
+    """Casos del Dominio (Capa 3): reglas de usuarios. Cada test arma su dict."""
+
+    def _usuarios_de_juguete(self):
+        # Dos admins activos + un boletero, para probar el anti-admin-suicida.
+        return {
+            "gestor": {"clave": "1234", "rol": "administrador", "estado": "activo"},
+            "gestor2": {"clave": "abcd", "rol": "administrador", "estado": "activo"},
+            "vende1": {"clave": "pass", "rol": "boletero", "estado": "activo"},
+        }
+
+    # ---- credencial_valida ----
+    def test_login_ok_devuelve_rol(self):
+        usuarios = self._usuarios_de_juguete()
+        exito, rol = logica_usuarios.credencial_valida(usuarios, "gestor", "1234")
+        self.assertTrue(exito)
+        self.assertEqual(rol, "administrador")
+
+    def test_login_normaliza_usuario(self):
+        # Tipear "GESTOR" con mayúsculas y espacios igual loguea
+        usuarios = self._usuarios_de_juguete()
+        exito, rol = logica_usuarios.credencial_valida(usuarios, "  GESTOR  ", "1234")
+        self.assertTrue(exito)
+
+    def test_login_clave_incorrecta(self):
+        usuarios = self._usuarios_de_juguete()
+        exito, _ = logica_usuarios.credencial_valida(usuarios, "gestor", "mala")
+        self.assertFalse(exito)
+
+    def test_login_clave_no_se_normaliza(self):
+        # La clave es case-sensitive: "PASS" no es "pass"
+        usuarios = self._usuarios_de_juguete()
+        exito, _ = logica_usuarios.credencial_valida(usuarios, "vende1", "PASS")
+        self.assertFalse(exito)
+
+    def test_login_usuario_inactivo(self):
+        usuarios = self._usuarios_de_juguete()
+        usuarios["vende1"]["estado"] = "inactivo"
+        exito, _ = logica_usuarios.credencial_valida(usuarios, "vende1", "pass")
+        self.assertFalse(exito)
+
+    # ---- crear_usuario ----
+    def test_crear_usuario_nuevo(self):
+        usuarios = self._usuarios_de_juguete()
+        exito, _ = logica_usuarios.crear_usuario(usuarios, "vende2", "clave", "boletero")
+        self.assertTrue(exito)
+        self.assertIn("vende2", usuarios)
+        self.assertEqual(usuarios["vende2"]["estado"], "activo")
+
+    def test_crear_usuario_existente_distinta_capitalizacion(self):
+        # "Gestor" ya existe como "gestor" → anti-clones lo rechaza
+        usuarios = self._usuarios_de_juguete()
+        exito, _ = logica_usuarios.crear_usuario(usuarios, "Gestor", "x", "administrador")
+        self.assertFalse(exito)
+
+    def test_crear_usuario_nombre_admin_reservado(self):
+        usuarios = self._usuarios_de_juguete()
+        exito, _ = logica_usuarios.crear_usuario(usuarios, "admin", "x", "administrador")
+        self.assertFalse(exito)
+        self.assertNotIn("admin", usuarios)
+
+    def test_crear_usuario_clave_no_se_normaliza(self):
+        usuarios = self._usuarios_de_juguete()
+        logica_usuarios.crear_usuario(usuarios, "nuevo", "ClAvE123", "boletero")
+        self.assertEqual(usuarios["nuevo"]["clave"], "ClAvE123")
+
+    # ---- desactivar_usuario ----
+    def test_desactivar_con_otro_admin_activo(self):
+        usuarios = self._usuarios_de_juguete()
+        exito, _ = logica_usuarios.desactivar_usuario(usuarios, "gestor")
+        self.assertTrue(exito)
+        self.assertEqual(usuarios["gestor"]["estado"], "inactivo")
+
+    def test_desactivar_ultimo_admin_activo_bloquea(self):
+        usuarios = self._usuarios_de_juguete()
+        # Dejar a "gestor" como único admin activo
+        usuarios["gestor2"]["estado"] = "inactivo"
+        exito, _ = logica_usuarios.desactivar_usuario(usuarios, "gestor")
+        self.assertFalse(exito)
+        self.assertEqual(usuarios["gestor"]["estado"], "activo")  # no se tocó
+
+    def test_desactivar_ya_inactivo(self):
+        usuarios = self._usuarios_de_juguete()
+        usuarios["vende1"]["estado"] = "inactivo"
+        exito, mensaje = logica_usuarios.desactivar_usuario(usuarios, "vende1")
+        self.assertFalse(exito)
+        self.assertIn("inactivo", mensaje.lower())
+
+    def test_desactivar_inexistente(self):
+        usuarios = self._usuarios_de_juguete()
+        exito, _ = logica_usuarios.desactivar_usuario(usuarios, "fantasma")
+        self.assertFalse(exito)
+
+    # ---- resetear_clave ----
+    def test_resetear_clave_reactiva(self):
+        usuarios = self._usuarios_de_juguete()
+        usuarios["vende1"]["estado"] = "inactivo"
+        exito, _ = logica_usuarios.resetear_clave(usuarios, "vende1", "nueva")
+        self.assertTrue(exito)
+        self.assertEqual(usuarios["vende1"]["estado"], "activo")
+        self.assertEqual(usuarios["vende1"]["clave"], "nueva")
+
+    def test_resetear_clave_normaliza_nombre(self):
+        # Encuentra al usuario aunque se tipee con otra capitalización
+        usuarios = self._usuarios_de_juguete()
+        exito, _ = logica_usuarios.resetear_clave(usuarios, "VENDE1", "nueva")
+        self.assertTrue(exito)
+
+    def test_resetear_clave_inexistente(self):
+        usuarios = self._usuarios_de_juguete()
+        exito, _ = logica_usuarios.resetear_clave(usuarios, "fantasma", "nueva")
+        self.assertFalse(exito)
+
+    # ---- contar_admins_activos ----
+    def test_contar_admins_activos(self):
+        usuarios = self._usuarios_de_juguete()
+        self.assertEqual(logica_usuarios.contar_admins_activos(usuarios), 2)
+
+    def test_contar_admins_uno_inactivo(self):
+        usuarios = self._usuarios_de_juguete()
+        usuarios["gestor2"]["estado"] = "inactivo"
+        self.assertEqual(logica_usuarios.contar_admins_activos(usuarios), 1)
+
+    # ---- existe_usuario ----
+    def test_existe_usuario_normaliza(self):
+        usuarios = self._usuarios_de_juguete()
+        self.assertTrue(logica_usuarios.existe_usuario(usuarios, "  Gestor "))
+        self.assertFalse(logica_usuarios.existe_usuario(usuarios, "fantasma"))
+
+    # ---- listar_usuarios ----
+    def test_listar_usuarios(self):
+        usuarios = self._usuarios_de_juguete()
+        lista = logica_usuarios.listar_usuarios(usuarios)
+        self.assertEqual(len(lista), 3)
+        self.assertIn(("vende1", "boletero", "activo"), lista)
 
 
 if __name__ == "__main__":
