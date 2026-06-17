@@ -22,6 +22,7 @@ import finanzas
 import asientos
 import logica_usuarios
 import logica_viajes
+import logica_ventas
 
 
 class TestValidaciones(unittest.TestCase):
@@ -491,6 +492,106 @@ class TestViajes(unittest.TestCase):
         # Dos viajes a "bariloche" (activos) → un solo destino. "mendoza" cancelado → fuera.
         destinos = logica_viajes.destinos_activos_unicos(viajes)
         self.assertEqual(destinos, {"bariloche"})
+
+
+class TestVentas(unittest.TestCase):
+    """Casos del Dominio (Capa 3): reglas de ventas. Cada test arma sus dicts."""
+
+    def _ventas_de_juguete(self):
+        return {
+            "T0001": {"id_viaje": "V001", "dni": "38123456", "email": "a@b.com",
+                      "telefono": "1145678901", "fila": 1, "columna": 1,
+                      "precio_pagado": 58000.0, "boletero": "vende1"},
+            "T0002": {"id_viaje": "V001", "dni": "30111222", "email": "c@d.com",
+                      "telefono": "1145678902", "fila": 1, "columna": 2,
+                      "precio_pagado": 58000.0, "boletero": "vende2"},
+        }
+
+    # ---- proximo_id_venta ----
+    def test_proximo_id_venta_con_ventas(self):
+        ventas = self._ventas_de_juguete()
+        self.assertEqual(logica_ventas.proximo_id_venta(ventas), "T0003")
+
+    def test_proximo_id_venta_vacio(self):
+        self.assertEqual(logica_ventas.proximo_id_venta({}), "T0001")
+
+    def test_proximo_id_venta_usa_maximo(self):
+        ventas = {"T0001": {}, "T0009": {}}
+        self.assertEqual(logica_ventas.proximo_id_venta(ventas), "T0010")
+
+    # ---- registrar_venta ----
+    def test_registrar_venta(self):
+        ventas = {}
+        nuevo_id = logica_ventas.registrar_venta(
+            ventas, "V001", "38123456", "a@b.com", "1145678901",
+            2, 3, 58000.0, "vende1")
+        self.assertEqual(nuevo_id, "T0001")
+        self.assertEqual(ventas["T0001"]["id_viaje"], "V001")
+        self.assertEqual(ventas["T0001"]["fila"], 2)
+        self.assertEqual(ventas["T0001"]["boletero"], "vende1")
+
+    def test_registrar_varias_incrementa_id(self):
+        ventas = {}
+        logica_ventas.registrar_venta(ventas, "V001", "1", "a@b.com", "12345678",
+                                      1, 1, 100.0, "v")
+        segundo = logica_ventas.registrar_venta(ventas, "V001", "2", "a@b.com",
+                                                "12345678", 1, 2, 100.0, "v")
+        self.assertEqual(segundo, "T0002")
+        self.assertEqual(len(ventas), 2)
+
+    # ---- dni_ya_en_viaje ----
+    def test_dni_ya_en_viaje_presente(self):
+        ventas = self._ventas_de_juguete()
+        self.assertTrue(logica_ventas.dni_ya_en_viaje(ventas, "V001", "38123456"))
+
+    def test_dni_ausente(self):
+        ventas = self._ventas_de_juguete()
+        self.assertFalse(logica_ventas.dni_ya_en_viaje(ventas, "V001", "99999999"))
+
+    def test_dni_en_otro_viaje_no_cuenta(self):
+        # El mismo DNI pero en otro viaje no debe dar True para V002
+        ventas = self._ventas_de_juguete()
+        self.assertFalse(logica_ventas.dni_ya_en_viaje(ventas, "V002", "38123456"))
+
+    # ---- precios_de_ventas ----
+    def test_precios_de_ventas(self):
+        ventas = self._ventas_de_juguete()
+        precios = logica_ventas.precios_de_ventas(ventas)
+        self.assertEqual(sorted(precios), [58000.0, 58000.0])
+
+    def test_precios_de_ventas_vacio(self):
+        self.assertEqual(logica_ventas.precios_de_ventas({}), [])
+
+    # ---- ventas_de_boletero ----
+    def test_ventas_de_boletero_filtra(self):
+        ventas = self._ventas_de_juguete()
+        propias = logica_ventas.ventas_de_boletero(ventas, "vende1")
+        self.assertEqual(len(propias), 1)
+        self.assertEqual(propias[0]["dni"], "38123456")
+
+    def test_ventas_de_boletero_sin_ventas(self):
+        ventas = self._ventas_de_juguete()
+        self.assertEqual(logica_ventas.ventas_de_boletero(ventas, "fantasma"), [])
+
+    # ---- construir_ticket ----
+    def test_construir_ticket(self):
+        viaje = {"empresa": "Via Bariloche", "origen": "Buenos Aires",
+                 "destino": "bariloche", "fecha": "20/05/2026", "hora": "14:30",
+                 "precio_base": 50000.0, "estado": "activo"}
+        ticket = logica_ventas.construir_ticket(
+            "T0001", "V001", viaje, "38123456", 2, 3, 58000.0)
+        # Es una tupla inmutable con el orden definido en la arquitectura
+        self.assertIsInstance(ticket, tuple)
+        self.assertEqual(ticket, ("T0001", "V001", "Via Bariloche", "Buenos Aires",
+                                  "bariloche", "20/05/2026", "14:30", "38123456",
+                                  2, 3, 58000.0))
+
+    def test_ticket_es_inmutable(self):
+        viaje = {"empresa": "X", "origen": "A", "destino": "b", "fecha": "20/05/2026",
+                 "hora": "10:00", "precio_base": 100.0, "estado": "activo"}
+        ticket = logica_ventas.construir_ticket("T0001", "V001", viaje, "1", 1, 1, 100.0)
+        with self.assertRaises(TypeError):
+            ticket[0] = "otro"  # no se puede modificar una tupla
 
 
 if __name__ == "__main__":
