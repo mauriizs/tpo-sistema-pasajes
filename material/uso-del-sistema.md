@@ -132,6 +132,29 @@ MENÚ BOLETERO
 
 ---
 
+## 🌿 Estructura de ramas (Git)
+
+El repositorio tiene **dos ramas**, cada una con un propósito claro:
+
+| Rama | Para qué sirve | Qué contiene |
+|------|----------------|--------------|
+| **`main`** | La **entrega**: código estable y limpio. Es lo que se corrige/entrega. | Solo `src/`, `data/`, `README.md` y `.gitignore`. **No** tiene `material/` ni `CLAUDE.md`. |
+| **`develop`** | El **trabajo**: donde se desarrollan e integran las futuras implementaciones. | Todo lo de `main` **más** `material/` (este archivo, la arquitectura, etc.) y `CLAUDE.md`. Es la copia de trabajo completa. |
+
+**Flujo de trabajo:**
+
+1. Se trabaja siempre en **`develop`** (o en ramas `feature/...` que salen de
+   `develop` y vuelven a `develop`).
+2. Cuando hay código nuevo estable y probado, se integra a **`main`**.
+3. ⚠️ Al integrar `develop` → `main`, hay que tener cuidado de **no llevar
+   `material/` ni `CLAUDE.md`** a la entrega (esos archivos viven solo en
+   `develop`). Si por un merge llegan a `main`, se quitan con `git rm` antes de pushear.
+
+> Las ramas viejas de implementación (feature/*, etc.) se eliminaron una vez
+> integrado su trabajo; el historial de commits conserva la evidencia del flujo.
+
+---
+
 ## 🐞 Si algo falla
 
 - **"El archivo X está dañado o corrupto"** y el programa se detiene: alguno de
