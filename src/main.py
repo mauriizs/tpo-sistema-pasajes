@@ -1,3 +1,5 @@
+# Punto de entrada del sistema Nexus Viajes - TPO Grupo
+
 """
 CAPA 5 - Orquestación: punto de entrada del sistema.
 Carga el estado, decide modo fábrica/normal, pide datos con ui, aplica reglas
