@@ -51,4 +51,3 @@ uno verificado antes de seguir.
 ## Notas / detalles conocidos
 - El sistema **no** se ejecutó interactivamente en consola real (eso escribiría sobre los `.json`); queda como prueba manual pendiente del Paso 8.
 - Detalle cosmético menor sin corregir: el total de "Mis Ventas" muestra "(1 ventas)" sin singular.
-- Branch de trabajo: `cimientos`.
