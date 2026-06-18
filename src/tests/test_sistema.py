@@ -1,20 +1,11 @@
 """
-Suite de pruebas unitarias (unittest, librería estándar — NO pytest).
-
 Se testea la CAPA 1 (funciones puras) y las reglas del DOMINIO (Capa 3).
-NO se testea ui.py, los menús ni persistencia.py (ver arquitectura 5.2).
-
-Cada test arma sus propios datos de juguete: no lee data/. Se corre con:
-    python -m unittest        (desde la carpeta src/)
 """
 
 import os
 import sys
 import unittest
 
-# Permite importar los módulos de src/ sin importar desde dónde se ejecute
-# el test (portabilidad: "corre en cualquier computadora"). El test vive en
-# src/tests/, así que su carpeta padre es src/.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import validaciones
