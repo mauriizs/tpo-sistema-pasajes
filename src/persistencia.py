@@ -1,14 +1,9 @@
 """
 CAPA 2 - Persistencia: leer y escribir los archivos JSON de data/.
-
-Sabe de disco y de JSON; no sabe de reglas de negocio. Aquí viven las
-excepciones de archivos (FileNotFoundError, JSONDecodeError), tratadas según
-la arquitectura 3.8:
-  · archivo inexistente  → {}  (primera ejecución, normal)
-  · archivo corrupto     → avisar y FRENAR el programa (nunca destruir datos)
-
-La ruta a data/ se arma relativa a la ubicación del script (sin rutas
-absolutas), para que funcione en cualquier computadora.
+  · archivo inexistente  → {}  (primera ejecución)
+  · archivo corrupto     → avisar y frenar el programa (nunca destruir datos)
+La ruta a data/ se arma relativa al script (sin rutas absolutas), para que
+funcione en cualquier computadora.
 """
 
 import json

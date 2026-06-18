@@ -1,12 +1,6 @@
 """
-CAPA 1 - Lógica pura: validaciones de formato y normalización de texto.
-
-Funciones puras: reciben datos y devuelven datos. No imprimen, no piden input,
-no tocan archivos. No dependen de ningún otro módulo del proyecto.
-
-Acá viven las validaciones de FORMATO del dato (resueltas con regex), no las
-reglas de negocio. Cada función responde una sola pregunta: ¿el dato tiene la
-forma correcta? Es donde pegan los tests unitarios de la Capa 1.
+CAPA 1 - Lógica pura: validaciones de formato (regex) y normalización de texto.
+Cada función responde una sola pregunta: ¿el dato tiene la forma correcta?
 """
 
 import re
@@ -18,9 +12,7 @@ _PATRON_TELEFONO = re.compile(r"^\d{8,15}$")
 _PATRON_FECHA = re.compile(r"^\d{2}/\d{2}/\d{4}$")
 _PATRON_HORA = re.compile(r"^\d{2}:\d{2}$")
 
-# Tope de días por mes (índice 1..12). Febrero acepta 29 sin chequear bisiesto
-# (decisión consciente, ver arquitectura 4.1): la lógica de años bisiestos es
-# complejidad de calendario que ningún requisito pide.
+# Tope de días por mes (índice 1..12). Febrero acepta 29 sin chequear bisiesto.
 _DIAS_POR_MES = {
     1: 31, 2: 29, 3: 31, 4: 30, 5: 31, 6: 30,
     7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31,
@@ -44,10 +36,7 @@ def es_telefono_valido(telefono: str) -> bool:
 
 def es_fecha_valida(fecha: str) -> bool:
     """True si fecha tiene formato DD/MM/AAAA y el día es válido para el mes.
-       El tope de día es POR MES: 31 para ene/mar/may/jul/ago/oct/dic, 30 para
-       abr/jun/sep/nov, y 29 para febrero SIN chequear año bisiesto (se acepta
-       29/02 aunque el año no sea bisiesto, y se declara en la defensa).
-       NO valida que la fecha sea futura, solo la integridad del dato."""
+       Febrero acepta hasta 29 sin chequear año bisiesto. No valida que sea futura."""
     if _PATRON_FECHA.match(fecha) is None:
         return False
     dia = int(fecha[0:2])

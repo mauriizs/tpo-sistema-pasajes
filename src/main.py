@@ -1,12 +1,8 @@
 """
 CAPA 5 - Orquestación: punto de entrada del sistema.
-
-Cablea todo: carga el estado con persistencia, decide modo fábrica/normal,
-pide datos con ui, aplica reglas con el dominio y rutea según el rol. Es el
-único módulo que conoce ambos mundos (I/O y reglas).
-
-El estado (los tres diccionarios) vive acá y se pasa por parámetro hacia abajo:
-una sola fuente de estado, sin variables globales (arquitectura 1.6).
+Carga el estado, decide modo fábrica/normal, pide datos con ui, aplica reglas
+con el dominio y rutea según el rol. El estado (los tres diccionarios) vive acá
+y se pasa por parámetro hacia abajo: una sola fuente de estado, sin globales.
 """
 
 import sys
@@ -16,23 +12,21 @@ import ui
 import validaciones
 import logica_usuarios
 
-# Nombres de archivo como constantes (arquitectura 4.4).
+# Nombres de archivo como constantes.
 ARCHIVO_USUARIOS = "usuarios.json"
 ARCHIVO_VIAJES = "viajes.json"
 ARCHIVO_VENTAS = "ventas.json"
 
 
 def cargar_estado() -> tuple[dict, dict, dict]:
-    """Carga usuarios, viajes, ventas desde disco. Aplica auto-reparación
-       (si usuarios vacío → inyecta admin/admin). La inyección es una inserción
-       DIRECTA en el dict (no pasa por crear_usuario), así que el rechazo del
-       nombre "admin" no la bloquea: ese rechazo solo aplica al alta manual."""
+    """Carga usuarios, viajes, ventas desde disco. Auto-reparación: si usuarios
+       quedó vacío, inyecta admin/admin (inserción directa, no pasa por crear_usuario)."""
     usuarios = persistencia.cargar(ARCHIVO_USUARIOS)
     viajes = persistencia.cargar(ARCHIVO_VIAJES)
     ventas = persistencia.cargar(ARCHIVO_VENTAS)
     if not usuarios:
-        # Auto-reparación: sin usuarios el sistema quedaría muerto. Se inyecta
-        # el admin/admin de fábrica en memoria (lo persiste el flujo de fábrica).
+        # Sin usuarios el sistema quedaría muerto: se inyecta el admin/admin de
+        # fábrica en memoria (lo persiste el flujo de fábrica).
         usuarios["admin"] = {
             "clave": "admin",
             "rol": "administrador",
@@ -85,9 +79,8 @@ def flujo_login(usuarios: dict) -> tuple[str, str] | None:
         clave = ui.pedir_clave("Clave")
         exito, resultado = logica_usuarios.credencial_valida(usuarios, usuario, clave)
         if exito:
-            # resultado transporta el ROL cuando exito=True (arquitectura 4.5).
-            # El usuario_actual se devuelve normalizado: es la clave del dict y lo
-            # que se estampa como 'boletero' en las ventas.
+            # resultado transporta el ROL cuando exito=True. El usuario_actual se
+            # devuelve normalizado: es la clave del dict y lo que se estampa en las ventas.
             return (validaciones.normalizar_texto(usuario), resultado)
         intentos += 1
         ui.mostrar_error(resultado)
@@ -100,8 +93,7 @@ def flujo_login(usuarios: dict) -> tuple[str, str] | None:
 def main() -> None:
     """Punto de entrada. Carga los 3 archivos, decide modo fábrica/normal,
        corre el bucle del menú principal."""
-    # Fuerza UTF-8 en la consola para que tildes/ñ se vean bien en Windows
-    # (no depende del codepage de la terminal). Guarda por si la versión no lo soporta.
+    # Fuerza UTF-8 en la consola para que tildes/ñ se vean bien en Windows.
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
 
@@ -120,9 +112,7 @@ def main() -> None:
             if credenciales is not None:
                 usuario_actual, rol = credenciales
                 ui.mostrar_exito(f"Sesión iniciada como {usuario_actual} ({rol}).")
-                # Import diferido de los menús: el ruteo solo los necesita tras un
-                # login exitoso, y permite construir/probar el arranque de forma
-                # independiente de las Capas 5 que se implementan después.
+                # Import diferido: los menús solo se necesitan tras un login exitoso.
                 if rol == "administrador":
                     import menu_admin
                     menu_admin.menu_admin(usuarios, viajes, ventas, usuario_actual)

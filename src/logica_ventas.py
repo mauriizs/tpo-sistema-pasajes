@@ -1,10 +1,7 @@
 """
 CAPA 3 - Dominio: reglas de negocio de ventas (la fuente de verdad).
-
-Opera sobre el diccionario `ventas` (lo recibe por parámetro) y devuelve
-resultados. NUNCA hace print()/input(), NUNCA toca disco: registrar_venta
-modifica el dict en memoria y el flujo (Capa 5) guarda después. Esta separación
-es la que permite testear el dominio sin escribir archivos (arquitectura 1.5).
+Opera sobre el diccionario `ventas`; no hace I/O ni toca disco. registrar_venta
+modifica el dict en memoria y el flujo (Capa 5) guarda después.
 """
 
 

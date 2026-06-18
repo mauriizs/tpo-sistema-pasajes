@@ -1,20 +1,11 @@
 """
-Suite de pruebas unitarias (unittest, librería estándar — NO pytest).
-
 Se testea la CAPA 1 (funciones puras) y las reglas del DOMINIO (Capa 3).
-NO se testea ui.py, los menús ni persistencia.py (ver arquitectura 5.2).
-
-Cada test arma sus propios datos de juguete: no lee data/. Se corre con:
-    python -m unittest        (desde la carpeta src/)
 """
 
 import os
 import sys
 import unittest
 
-# Permite importar los módulos de src/ sin importar desde dónde se ejecute
-# el test (portabilidad: "corre en cualquier computadora"). El test vive en
-# src/tests/, así que su carpeta padre es src/.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import validaciones
@@ -580,7 +571,7 @@ class TestVentas(unittest.TestCase):
                  "precio_base": 50000.0, "estado": "activo"}
         ticket = logica_ventas.construir_ticket(
             "T0001", "V001", viaje, "38123456", 2, 3, 58000.0)
-        # Es una tupla inmutable con el orden definido en la arquitectura
+        # Es una tupla inmutable con el orden definido para el ticket
         self.assertIsInstance(ticket, tuple)
         self.assertEqual(ticket, ("T0001", "V001", "Via Bariloche", "Buenos Aires",
                                   "bariloche", "20/05/2026", "14:30", "38123456",

@@ -1,14 +1,8 @@
 """
-CAPA 5 - Orquestación: menú del boletero.
-
-Contiene el flujo estrella del TP2: la VENTA MÚLTIPLE atómica tipo carrito
-(arquitectura 3.2). Orquesta: pide con ui, decide con el dominio, guarda con
-persistencia. No aplica reglas por su cuenta ni imprime tablas a mano (eso es ui).
-
-Atomicidad: durante la carga NADA se registra ni se toca ningún asiento real.
-Todo vive en estructuras temporales (carrito, conjunto_sesion, matriz_trabajo).
-Recién en la confirmación se crean las N ventas y se guarda UNA sola vez. Por eso
-cancelar es gratis: no hay nada escrito que deshacer.
+CAPA 5 - Orquestación: menú del boletero, con la venta múltiple atómica.
+Durante la carga nada se registra ni se toca ningún asiento real: todo vive en
+estructuras temporales (carrito, conjunto_sesion, matriz_trabajo). Recién al
+confirmar se crean las N ventas y se guarda una sola vez; por eso cancelar es gratis.
 """
 
 import persistencia
@@ -70,8 +64,8 @@ def flujo_ver_cartelera(viajes: dict, ventas: dict) -> None:
 
 
 def flujo_venta_multiple(viajes: dict, ventas: dict, usuario_actual: str) -> None:
-    """VENTA MÚLTIPLE atómica (arquitectura 3.2). Cualquier '0' durante la carga
-       cancela TODA la venta: como nada se escribió, no hay nada que deshacer."""
+    """Venta múltiple atómica. Cualquier '0' durante la carga cancela toda la venta:
+       como nada se escribió, no hay nada que deshacer."""
 
     # ---- PASO 0 · Seleccionar viaje (vista vendible) ----
     vendibles = buscar_viajes(viajes, ventas, None, None, None, solo_vendibles=True)

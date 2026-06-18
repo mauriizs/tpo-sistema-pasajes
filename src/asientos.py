@@ -1,12 +1,7 @@
 """
 CAPA 1 - Lógica pura: la grilla de asientos del micro (matriz 5x4).
-
-Funciones puras: reciben datos y devuelven datos. No imprimen, no piden input,
-no tocan archivos. No dependen de ningún otro módulo del proyecto.
-
-La matriz NO se persiste: se deriva de las ventas de un viaje cada vez que se
-necesita (ver arquitectura 2.2). Estas funciones reciben SOLO las ventas de ese
-viaje (ya filtradas por el dominio) para mantenerse puras y simples.
+La matriz no se persiste: se deriva de las ventas de un viaje cada vez que se
+necesita. Estas funciones reciben solo las ventas de ese viaje (ya filtradas).
 """
 
 FILAS: int = 5       # constante del sistema
@@ -20,7 +15,7 @@ def construir_grilla(ventas_del_viaje: list[dict]) -> list[list[str]]:
        Cada venta con (fila, columna) marca esa celda como 'O'. El resto queda 'L'.
        Una lista vacía produce una grilla toda 'L'."""
     # Grilla nueva toda libre. Se crea fila por fila para no compartir la misma
-    # lista interna entre filas (evita el bug de la referencia repetida).
+    # lista interna entre filas.
     grilla = [[LIBRE for _ in range(COLUMNAS)] for _ in range(FILAS)]
     for venta in ventas_del_viaje:
         fila = venta["fila"]
@@ -37,11 +32,8 @@ def asiento_en_rango(fila: int, columna: int) -> bool:
 
 
 def asiento_esta_libre(grilla: list[list[str]], fila: int, columna: int) -> bool:
-    """True si la celda (fila, columna) de la grilla está libre.
-       fila y columna en base 1 (el usuario piensa en base 1).
-       Usa asiento_en_rango como guarda previa: si la coordenada está fuera de los
-       límites 5x4, devuelve False en vez de indexar (evita el wraparound silencioso
-       de un índice negativo, p.ej. columna 0 → -1 → última columna)."""
+    """True si la celda (fila, columna) de la grilla está libre (base 1).
+       Si la coordenada está fuera de rango devuelve False en vez de indexar."""
     if not asiento_en_rango(fila, columna):
         return False
     return grilla[fila - 1][columna - 1] == LIBRE
