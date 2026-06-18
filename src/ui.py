@@ -192,7 +192,9 @@ def mostrar_historial_ventas(ventas_propias: list[dict], total: float) -> None:
         print(f"{venta['id_viaje']:<8}{venta['dni']:<12}{asiento:<12}"
               f"${venta['precio_pagado']:>10,.2f}")
     print("-" * 56)
-    print(f"{'TOTAL':<27}${total:>10,.2f}   ({len(ventas_propias)} ventas)")
+    cantidad = len(ventas_propias)
+    etiqueta = "venta" if cantidad == 1 else "ventas"
+    print(f"{'TOTAL':<27}${total:>10,.2f}   ({cantidad} {etiqueta})")
     print("-" * 56)
 
 
