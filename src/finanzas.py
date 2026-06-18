@@ -1,11 +1,6 @@
 """
-CAPA 1 - Lógica pura: cálculos de dinero del sistema.
-
-Funciones puras: reciben datos y devuelven datos. No imprimen, no piden input,
-no tocan archivos. No dependen de ningún otro módulo del proyecto.
-
-Acá vive el recargo de servicio, la suma de recaudación (con reduce) y la
-normalización del input de precio (sin convertir: eso lo hace pedir_precio).
+CAPA 1 - Lógica pura: cálculos de dinero (recargo, recaudación con reduce y
+normalización del input de precio).
 """
 
 from functools import reduce
@@ -14,9 +9,7 @@ RECARGO_SERVICIO: float = 1.16   # constante: 16% de recargo
 
 
 def aplicar_recargo(precio_base: float) -> float:
-    """Devuelve el precio con el 16% de recargo aplicado (precio_base * RECARGO_SERVICIO).
-       Función escalar pura: recibe un precio, devuelve un precio. El uso de map vive en el
-       flujo de venta (proyecta el carrito de N pasajeros a su lista de precios), no acá."""
+    """Devuelve el precio con el 16% de recargo aplicado (precio_base * RECARGO_SERVICIO)."""
     return precio_base * RECARGO_SERVICIO
 
 

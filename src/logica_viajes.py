@@ -1,12 +1,7 @@
 """
 CAPA 3 - Dominio: reglas de negocio de viajes.
-
-Opera sobre los diccionarios `viajes` y `ventas` (los recibe por parámetro) y
-devuelve resultados. NUNCA hace print()/input(), NUNCA toca disco (lo orquesta
-la Capa 5). Las reglas que pueden "fallar por regla" devuelven (exito, mensaje).
-
-Importa de la Capa 1 (validaciones, asientos) para normalizar texto y derivar la
-ocupación desde las ventas. NO importa persistencia (el dominio no persiste).
+Opera sobre los diccionarios `viajes` y `ventas`; no hace I/O ni toca disco.
+Las reglas que pueden fallar devuelven (exito, mensaje).
 """
 
 from validaciones import normalizar_texto
@@ -32,10 +27,9 @@ def proximo_id_viaje(viajes: dict) -> str:
 def alta_viaje(viajes: dict, empresa: str, origen: str, destino: str,
                fecha: str, hora: str, precio_base: float) -> tuple[bool, str]:
     """Crea un viaje nuevo con ID autogenerado (V + max+1) y estado 'activo'.
-       Normaliza el destino con normalizar_texto (strip+lower) ANTES de guardarlo,
-       para que quede en forma canónica (el reporte de destinos únicos deduplica y
-       la búsqueda por destino es consistente). empresa y origen se guardan tal cual
-       (strip), no se normalizan a minúsculas. Devuelve (True, id_generado)."""
+       Guarda el destino normalizado (strip+lower) para que el reporte de destinos
+       únicos deduplique y la búsqueda sea consistente; empresa y origen van con strip.
+       Devuelve (True, id_generado)."""
     nuevo_id = proximo_id_viaje(viajes)
     viajes[nuevo_id] = {
         "empresa": empresa.strip(),

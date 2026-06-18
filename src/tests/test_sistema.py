@@ -571,7 +571,7 @@ class TestVentas(unittest.TestCase):
                  "precio_base": 50000.0, "estado": "activo"}
         ticket = logica_ventas.construir_ticket(
             "T0001", "V001", viaje, "38123456", 2, 3, 58000.0)
-        # Es una tupla inmutable con el orden definido en la arquitectura
+        # Es una tupla inmutable con el orden definido para el ticket
         self.assertIsInstance(ticket, tuple)
         self.assertEqual(ticket, ("T0001", "V001", "Via Bariloche", "Buenos Aires",
                                   "bariloche", "20/05/2026", "14:30", "38123456",

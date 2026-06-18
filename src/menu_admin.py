@@ -1,12 +1,6 @@
 """
-CAPA 5 - Orquestación: menú del administrador.
-
-Cablea ui + dominio + persistencia para gestionar viajes, usuarios y reportes.
-Orquesta: pide con ui, decide con el dominio, guarda con persistencia. No aplica
-reglas por su cuenta ni imprime tablas a mano (eso es ui).
-
-Guardado transaccional (3.1.D): se escribe a disco inmediatamente después de
-cada mutación (alta/modificación/baja de viaje, crear/desactivar/resetear usuario).
+CAPA 5 - Orquestación: menú del administrador (gestión de viajes, usuarios y reportes).
+Guardado transaccional: se escribe a disco inmediatamente después de cada mutación.
 """
 
 import persistencia

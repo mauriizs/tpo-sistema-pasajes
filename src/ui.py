@@ -1,16 +1,9 @@
 """
-CAPA 4 - Presentación: todo lo que el usuario VE y TIPEA.
+CAPA 4 - Presentación: todo lo que el usuario ve y tipea (banners, menús, tablas,
+mapa de asientos, ticket, mensajes y las pedir_X). No aplica reglas de negocio.
 
-Banners, menús, tablas, mapa de asientos, ticket, mensajes y las funciones
-pedir_X(). NUNCA aplica una regla de negocio: muestra lo que le pasan y captura
-lo que el usuario tipea. Recibe los datos YA cocinados por el dominio.
-
-Importa de la Capa 1: validaciones (validadores reusados en las pedir_X) y
-finanzas (normalizar_precio). NO conoce el dominio ni la persistencia.
-
-Convención '0' (arquitectura 3.1.A): en las pedir_X, '0' significa cancelar y
-subir un nivel → devuelve None. El parámetro permitir_cancelar lo desactiva
-cuando el flujo no debe ofrecer salida (p. ej. crear el admin en modo fábrica).
+En las pedir_X, '0' significa cancelar y subir un nivel → devuelve None. El
+parámetro permitir_cancelar lo desactiva cuando el flujo no debe ofrecer salida.
 """
 
 import validaciones
@@ -126,7 +119,7 @@ def mostrar_mapa_asientos(grilla: list[list[str]]) -> None:
 
 
 def mostrar_lista_usuarios(usuarios_listados: list[tuple[str, str, str]]) -> None:
-    """Muestra el 'mapa' de usuarios: (nombre, rol, estado)."""
+    """Muestra la lista de usuarios: (nombre, rol, estado)."""
     if not usuarios_listados:
         mostrar_info("No hay usuarios cargados.")
         return
@@ -175,10 +168,7 @@ def mostrar_resumen_compra(carrito: list[dict], total: float) -> None:
 
 def mostrar_historial_ventas(ventas_propias: list[dict], total: float) -> None:
     """Muestra el historial de ventas de un boletero ('Mis Ventas') + su total.
-       NOTA: esta función no está en el contrato congelado original (4.8); se agrega
-       conscientemente porque 'Mis Ventas' (3.10) necesita presentar la lista y el
-       contrato no tenía una función para ese listado. Recibe los datos ya filtrados
-       por el dominio (ventas_de_boletero)."""
+       Recibe los datos ya filtrados por el dominio."""
     if not ventas_propias:
         mostrar_info("No registrás ventas aún. Total: $0.00")
         return
@@ -304,9 +294,7 @@ def pedir_hora(permitir_cancelar: bool = True) -> str | None:
 
 
 def pedir_precio(permitir_cancelar: bool = True) -> float | None:
-    """Pide precio: normaliza coma→punto, try/except float, valida > 0.
-       '0' → None (cancelar). Un precio válido es siempre > 0, así que '0'
-       nunca es un precio legítimo y puede usarse como código de cancelación."""
+    """Pide precio: normaliza coma→punto, try/except float, valida > 0. '0' → None (cancelar)."""
     sufijo = " (0 = cancelar)" if permitir_cancelar else ""
     while True:
         entrada = input(f"Precio base{sufijo}: ").strip()
@@ -326,9 +314,7 @@ def pedir_precio(permitir_cancelar: bool = True) -> float | None:
 
 def pedir_entero(prompt: str, minimo: int, maximo: int,
                  permitir_cancelar: bool = True) -> int | None:
-    """Pide un entero en [minimo, maximo] con try/except. '0' → None (cancelar).
-       En todos sus usos el rango válido empieza en 1, así que '0' nunca colisiona
-       con un valor legítimo y funciona limpio como cancelación."""
+    """Pide un entero en [minimo, maximo] con try/except. '0' → None (cancelar)."""
     sufijo = " (0 = cancelar)" if permitir_cancelar else ""
     while True:
         entrada = input(f"{prompt} [{minimo}-{maximo}]{sufijo}: ").strip()
@@ -348,8 +334,8 @@ def pedir_clave(prompt: str) -> str:
     """Pide una clave SIN normalizar. Solo valida que no esté vacía."""
     while True:
         entrada = input(f"{prompt}: ")
-        # La clave NO se normaliza: se valida solo que no esté vacía tras strip,
-        # pero se devuelve TAL CUAL se tipeó (case-sensitive, sin recortar).
+        # La clave no se normaliza: se valida que no esté vacía pero se devuelve
+        # tal cual se tipeó (case-sensitive).
         if entrada.strip() != "":
             return entrada
         mostrar_error("La clave no puede estar vacía.")
