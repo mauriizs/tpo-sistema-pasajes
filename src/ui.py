@@ -173,6 +173,29 @@ def mostrar_resumen_compra(carrito: list[dict], total: float) -> None:
     print("-" * 56)
 
 
+def mostrar_historial_ventas(ventas_propias: list[dict], total: float) -> None:
+    """Muestra el historial de ventas de un boletero ('Mis Ventas') + su total.
+       NOTA: esta función no está en el contrato congelado original (4.8); se agrega
+       conscientemente porque 'Mis Ventas' (3.10) necesita presentar la lista y el
+       contrato no tenía una función para ese listado. Recibe los datos ya filtrados
+       por el dominio (ventas_de_boletero)."""
+    if not ventas_propias:
+        mostrar_info("No registrás ventas aún. Total: $0.00")
+        return
+    print("\n" + "-" * 56)
+    print("           MIS VENTAS")
+    print("-" * 56)
+    print(f"{'Viaje':<8}{'DNI':<12}{'Asiento':<12}{'Precio':>12}")
+    print("-" * 56)
+    for venta in ventas_propias:
+        asiento = f"F{venta['fila']} C{venta['columna']}"
+        print(f"{venta['id_viaje']:<8}{venta['dni']:<12}{asiento:<12}"
+              f"${venta['precio_pagado']:>10,.2f}")
+    print("-" * 56)
+    print(f"{'TOTAL':<27}${total:>10,.2f}   ({len(ventas_propias)} ventas)")
+    print("-" * 56)
+
+
 def mostrar_recaudacion(total: float, cantidad: int) -> None:
     """Muestra el reporte de recaudación total."""
     print("\n" + "-" * 40)
