@@ -1,0 +1,7 @@
+{
+    "admin": {
+        "clave": "admin",
+        "rol": "administrador",
+        "estado": "activo"
+    }
+}

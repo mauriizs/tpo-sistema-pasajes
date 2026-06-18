@@ -1,0 +1,56 @@
+{
+    "V001": {
+        "empresa": "Via Bariloche",
+        "origen": "Buenos Aires",
+        "destino": "bariloche",
+        "fecha": "20/05/2026",
+        "hora": "14:30",
+        "precio_base": 50000.0,
+        "estado": "activo"
+    },
+    "V002": {
+        "empresa": "Andesmar",
+        "origen": "Buenos Aires",
+        "destino": "bariloche",
+        "fecha": "21/05/2026",
+        "hora": "10:00",
+        "precio_base": 48000.0,
+        "estado": "activo"
+    },
+    "V003": {
+        "empresa": "Flecha Bus",
+        "origen": "Buenos Aires",
+        "destino": "mendoza",
+        "fecha": "22/05/2026",
+        "hora": "08:00",
+        "precio_base": 42000.0,
+        "estado": "activo"
+    },
+    "V004": {
+        "empresa": "Chevallier",
+        "origen": "Buenos Aires",
+        "destino": "mar del plata",
+        "fecha": "18/05/2026",
+        "hora": "23:00",
+        "precio_base": 25000.0,
+        "estado": "activo"
+    },
+    "V005": {
+        "empresa": "Via Bariloche",
+        "origen": "Cordoba",
+        "destino": "mendoza",
+        "fecha": "25/05/2026",
+        "hora": "16:45",
+        "precio_base": 38000.0,
+        "estado": "activo"
+    },
+    "V006": {
+        "empresa": "Plusmar",
+        "origen": "Buenos Aires",
+        "destino": "mar del plata",
+        "fecha": "19/05/2026",
+        "hora": "07:30",
+        "precio_base": 27000.0,
+        "estado": "cancelado"
+    }
+}
