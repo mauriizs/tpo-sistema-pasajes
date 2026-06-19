@@ -1,8 +1,7 @@
 # Indicaciones para el PowerPoint
 
 Contenido slide por slide para la presentación del TP2. Está basado en
-`documentacion-tp2.md` (NO en la arquitectura, que es demasiado larga para una
-defensa). Cada slide tiene: **título**, **bullets** (lo que se ve en pantalla) y
+`documentacion-tp2.md`. Cada slide tiene: **título**, **bullets** (lo que se ve en pantalla) y
 **notas** (lo que se cuenta / qué mostrar). Mantener pocos bullets por slide y
 texto corto: la diapositiva acompaña, no se lee de corrido.
 
