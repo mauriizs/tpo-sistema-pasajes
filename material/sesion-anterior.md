@@ -4,71 +4,58 @@
 2026-06-19.
 
 ## Punto de partida
-El código estaba 100% terminado y verificado (82 tests en verde) desde sesiones
-anteriores. Quedaba pendiente la documentación de entrega. Hoy fue una sesión de
-pulido de documentación y armado de los entregables (PDF y PowerPoint).
+Todo terminado de sesiones previas: código (82 tests en verde), documentación en
+PDF y PowerPoint. Esta sesión fue el **cierre de la entrega**: verificar que la
+rama de entrega corre perfecto y armar el paquete final.
 
 ## Qué hicimos hoy
 
-### Pulido de la documentación (`material/documentacion-tp2.md`)
-- **Integramos 3 bloques** que Mauri había dejado como comentarios HTML (no se
-  veían en el render):
-  - El **diagrama de capas** → a la sección 4 (Estructura), como bloque de código.
-  - Los **ejemplos de las 3 estructuras** (usuarios/viajes/ventas) → a la 5.1
-    (Diccionarios), cada uno como bloque `python`.
-  - La nota de **lo que NO se guarda** (se calcula y se descarta) → como párrafo
-    al final de 5.1.
-- **Emparejamos la sección 5** con mini-ejemplos de código reales en cada
-  subsección (tuplas, conjuntos, excepciones, archivos, pruebas), para que quedara
-  pareja con Diccionarios. Antes de escribirlos se chequearon los nombres de
-  funciones reales en el código (`construir_ticket`, `destinos_activos_unicos`,
-  `dnis_del_viaje`, `pedir_confirmacion`, `cargar`/`guardar`/`ruta_data`, etc.).
-- **Sacamos el lenguaje sobreactuado** (pedido de Mauri): `suite`, `orquestación`,
-  `transaccional`, `atómica`, `fuente de verdad`. El diagrama de capas se deslenó
-  (Orquestación→Menús, Dominio→Reglas, Lógica pura→Funciones puras, etc.).
-- **Detalle:** la fecha de la carátula quedó sin el punto final.
+### Verificación de la rama de entrega (`main`)
+- Confirmamos que `main` está limpia (sin `material/` ni `CLAUDE.md`) y al día con
+  `origin/main`. Mauri ya había actualizado el `README.md` (commit `04fcbf9`):
+  título sin "Nexus Viajes —" y sin emojis en los encabezados.
+- Corrimos los **82 tests sobre `main`** → todos OK. Python 3.13 (cumple 3.10+).
+- **Smoke test de ejecución real** de la app (no solo tests):
+  - *Modo fábrica:* banner → crea admin real → cae al menú principal → salida
+    limpia (exit 0).
+  - *Modo normal:* login → ruteo al menú administrador (8 opciones) → cerrar
+    sesión vuelve al menú ciego → salida limpia (exit 0).
+  - Sin excepciones, sin errores de import, UTF-8 OK (tildes/ñ).
+- Tras las pruebas, **restauramos `data/` a fábrica** con `git restore data/`
+  (los smoke tests habían creado un admin de prueba).
 
-### Arreglo de una contradicción en la doc (lo más importante)
-- Un revisor externo detectó que `cargar` aparecía en **5.4** con su `try/except`
-  completo y en **5.5** en una versión simplificada **sin** el `try/except`. Esa
-  versión simplificada rompería con `FileNotFoundError` en la primera ejecución,
-  contradiciendo el "modo fábrica" de la introducción.
-- **Solución:** en 5.5 reemplazamos el `cargar` simplificado por `ruta_data` +
-  `guardar` (sin duplicar el `try/except`, que ya está en 5.4), y el bullet de
-  `cargar` ahora remite a 5.4. Después, por un detalle estético, nombramos
-  `ruta_data` en el texto de 5.5 para que toda función del código esté mencionada
-  en la prosa.
+### Armado de los entregables
+- Generamos el ZIP del código con **`git archive`** (no a mano), que exporta
+  exactamente lo commiteado en `main`: solo `src/`, `data/` (fábrica), `README.md`
+  y `.gitignore`. Sin `__pycache__`, sin `material/`, sin `CLAUDE.md`.
+- Creamos un **`repositorio.txt`** con el link de GitHub
+  (https://github.com/mauriizs/tpo-sistema-pasajes), el **commit de la entrega**
+  (`04fcbf9`) y cómo ejecutar/testear.
+- Empaquetamos todo en **`grupo_9.zip`** con el código como **carpeta navegable**
+  (no zip dentro de zip): `Documentacion.pdf` + `Presentacion.pptx` +
+  `repositorio.txt` + carpeta `tpo-sistema-pasajes/`.
 
-### Guion del PowerPoint (`material/powerpoint-indicaciones.md`)
-- Creamos este archivo nuevo: **guion slide por slide (9 slides)** para la
-  presentación, basado en la documentación (no en la arquitectura). Cada slide con
-  título, bullets y notas del orador. Incluye consejos de armado y el prompt para
-  generarlo con Claude web.
-
-### Comando de tests
-- Detectamos que `python -m unittest discover -s tests` solo corre **parado en
-  `src/`**; desde la raíz (como abre la terminal de VS Code) falla con
-  `Start directory is not importable: 'tests'`. La versión que corre desde la raíz
-  es `python -m unittest discover -s src/tests -p "test_*.py"`. Verificado: ambas
-  dan 82 tests OK. Mauri actualizó el comando en la doc/PDF.
-
-### Entregables
-- Mauri pasó la documentación a **PDF** (vía Word/Google Docs) y generó el
-  **PowerPoint** con Claude web a partir del guion. Dejó todo sincronizado.
-- Mauri commiteó los cambios de `material/` en `develop`.
+### Verificación del paquete final
+- Extrajimos `grupo_9.zip` a una carpeta temporal **separada del repo** y corrimos
+  todo **desde esa copia**: 82 tests OK + smoke test (modo fábrica → exit 0).
+  Confirmado: la carpeta corre standalone (rutas relativas, solo stdlib).
+- Borramos la carpeta temporal de prueba al terminar.
 
 ## Estado actual
-- **Proyecto completo:** código (82 tests en verde), documentación en PDF y
-  PowerPoint, los tres entregables listos.
-- **Ramas:** `main` (entrega limpia) y `develop` (trabajo, con `material/` y
-  `CLAUDE.md`). Los cambios de hoy quedaron commiteados en `develop`.
+- **Entrega finalizada.** `grupo_9.zip` armado, verificado y listo para subir.
+- **Ramas:** `main` (entrega limpia, README actualizado) y `develop` (trabajo, con
+  `material/` y `CLAUDE.md`).
 
 ## Notas importantes para recordar
 - **`main` NO tiene `material/` ni `CLAUDE.md`** (es la entrega). Para llevar
   cambios de `develop` a `main`: usar **cherry-pick, NO merge**.
-- **Requisito de ejecución:** Python 3.10+ (type hints `X | None`).
+- **Para armar el ZIP de entrega:** usar `git archive --format=zip --prefix=...
+  -o <salida>.zip main` (exporta solo lo commiteado, sin basura).
+- **El `grupo_9.zip` quedó en** `D:\ALGORITMOS Y ESTRUCTURAS DE DATOS I\TPO\` (un
+  nivel arriba del repo), con código como carpeta + PDF + PPT + `repositorio.txt`.
+- **Requisito de ejecución:** Python 3.10+ (type hints `X | None`). Solo stdlib.
 - **Tests:** desde `src/` → `python -m unittest discover -s tests`; desde la raíz
-  → `python -m unittest discover -s src/tests -p "test_*.py"`.
-- **Restaurar datos a fábrica** tras probar: `git restore data/` (antes de
-  commitear).
+  → `python -m unittest discover -s src/tests -p "test_*.py"`. (82 tests.)
+- **Restaurar datos a fábrica** tras probar la app: `git restore data/` (antes de
+  commitear). El estado de fábrica es solo `admin/admin` en `usuarios.json`.
 - Mauri hace los commits; el asistente guía y verifica.
