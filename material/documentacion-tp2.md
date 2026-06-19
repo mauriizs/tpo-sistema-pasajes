@@ -16,7 +16,7 @@
 | Chaina, Brian | 1213338 | Tester |
 | Ayala, Alan | 1196870 | Diseñador de UI/UX |
 
-**Fecha:** 19 de junio de 2026.
+**Fecha:** 19 de junio de 2026
 
 ---
 
@@ -96,11 +96,11 @@ usuario accede al menú correspondiente a su rol:
 - Venta múltiple de pasajes (varios pasajeros en una sola operación).
 - Consultar su historial de ventas.
 
-Una característica central es la **venta múltiple atómica**: el boletero carga
-varios pasajeros en una especie de "carrito" y nada se registra hasta confirmar la
-operación completa. Si se cancela en el medio, no queda ningún dato a medio
-escribir. Durante la carga, el sistema muestra el mapa de asientos y evita que se
-repita un asiento o un DNI dentro de la misma compra.
+Una característica central es la **venta múltiple**: el boletero carga varios
+pasajeros en una especie de "carrito" y nada se registra hasta confirmar la
+operación completa. Es todo o nada: si se cancela en el medio, no queda ningún dato
+a medio escribir. Durante la carga, el sistema muestra el mapa de asientos y evita
+que se repita un asiento o un DNI dentro de la misma compra.
 
 ---
 
@@ -130,11 +130,17 @@ tpo-sistema-pasajes/
         └── test_sistema.py  Pruebas unitarias
 ```
 
-El código está separado en **capas**: las funciones de cálculo y validación no
-dependen de nada, la lógica de negocio opera sobre los datos sin imprimir ni pedir
-información, la presentación se encarga de la interacción con el usuario, y un nivel
-de orquestación conecta todo. Esta separación facilita probar la lógica de forma
-aislada.
+El código está separado en **capas**, donde cada capa solo depende de las de abajo,
+nunca al revés. Esto es lo que permite probar la lógica de negocio de forma
+aislada, sin depender de la consola ni de los archivos:
+
+```
+CAPA 5 · Menús           → main + menús. Conecta todo: pide datos, decide y guarda.
+CAPA 4 · Presentación    → ui. Lo que el usuario ve y escribe. No decide reglas.
+CAPA 3 · Reglas          → reglas del negocio. Decide, pero no imprime ni pide datos.
+CAPA 2 · Persistencia    → leer y escribir archivos. No conoce las reglas.
+CAPA 1 · Funciones puras → validar, calcular y armar la grilla. No dependen de nada.
+```
 
 ---
 
@@ -148,16 +154,59 @@ identificador del elemento:
 
 - **`usuarios`** — la clave es el nombre de usuario, y el valor es un diccionario
   con `clave`, `rol` y `estado`.
+
+```python
+usuarios = {
+    "mauri_admin": {"clave": "1234", "rol": "administrador", "estado": "activo"},
+    "boletero1":   {"clave": "abcd", "rol": "boletero",      "estado": "activo"},
+}
+```
+
 - **`viajes`** — la clave es el ID del viaje (por ejemplo `"V001"`), y el valor
   contiene `empresa`, `origen`, `destino`, `fecha`, `hora`, `precio_base` y `estado`.
+
+```python
+viajes = {
+    "V001": {
+        "empresa": "Via Bariloche",
+        "origen": "Buenos Aires",
+        "destino": "bariloche",        # se guarda en minúscula y sin espacios
+        "fecha": "20/05/2026",
+        "hora": "14:30",
+        "precio_base": 50000.0,
+        "estado": "activo",            # "activo" o "cancelado"
+    },
+}
+```
+
 - **`ventas`** — la clave es el ID de la venta (por ejemplo `"T0001"`), y el valor
   guarda `id_viaje`, `dni`, `email`, `telefono`, `fila`, `columna`,
   `precio_pagado` y `boletero`.
+
+```python
+ventas = {
+    "T0001": {
+        "id_viaje": "V001",
+        "dni": "38123456",
+        "email": "pepe@mail.com",
+        "telefono": "1145678901",
+        "fila": 2,
+        "columna": 3,
+        "precio_pagado": 58000.0,      # lo que se pagó ese día (no cambia)
+        "boletero": "boletero1",
+    },
+}
+```
 
 Estos diccionarios se cargan al inicio y se pasan como parámetro a las funciones
 que los necesitan. Se utilizan en todos los módulos de lógica
 (`logica_usuarios.py`, `logica_viajes.py`, `logica_ventas.py`) para buscar, crear,
 modificar y eliminar elementos.
+
+Hay datos que **no** se guardan porque se calculan en el momento: el mapa de
+asientos, los asientos libres, los DNIs que ya compraron y los destinos únicos.
+Todo eso se deriva de las ventas cuando se necesita y se descarta. Así los datos
+viven en un solo lugar y no hay copias que puedan quedar desincronizadas.
 
 ### 5.2 Tuplas
 
@@ -176,6 +225,16 @@ Además, las funciones de lógica que pueden fallar por una regla de negocio
 devuelven una tupla `(exito, mensaje)`, que el resto del programa interpreta para
 mostrar el resultado.
 
+```python
+asiento = (2, 3)                       # coordenada (fila, columna), inmutable
+
+# Comprobante que devuelve construir_ticket (logica_ventas.py)
+ticket = ("T0001", "V001", "Via Bariloche", "Buenos Aires", "bariloche",
+          "20/05/2026", "14:30", "38123456", 2, 3, 58000.0)
+
+exito, mensaje = alta_viaje(viajes, ...)   # las reglas devuelven (exito, mensaje)
+```
+
 ### 5.3 Conjuntos
 
 Los conjuntos (`set`) se usan donde se necesita unicidad o pertenencia rápida:
@@ -192,6 +251,17 @@ Los conjuntos (`set`) se usan donde se necesita unicidad o pertenencia rápida:
   compara contra el conjunto `{"s", "si", "sí"}` para aceptar la venta solo ante un
   "sí" inequívoco.
 
+```python
+# Confirmación con lista blanca (pedir_confirmacion en ui.py)
+respuesta in {"s", "si", "sí"}
+
+# Destinos activos sin repetidos (destinos_activos_unicos en logica_viajes.py)
+{viaje["destino"] for viaje in viajes.values() if viaje["estado"] == "activo"}
+
+# DNIs que ya compraron ese viaje (dnis_del_viaje en asientos.py)
+{venta["dni"] for venta in ventas_del_viaje}
+```
+
 ### 5.4 Excepciones
 
 Las excepciones se usan exactamente donde corresponde: situaciones que escapan al
@@ -204,6 +274,23 @@ control normal del programa.
 - **Conversión de tipos** (`ui.py`): al pedir un precio o un número entero, se usa
   `try/except ValueError` para detectar cuando el usuario escribe algo que no es un
   número y volver a preguntar.
+
+```python
+# persistencia.py — al cargar un archivo
+try:
+    with open(ruta, "r", encoding="utf-8") as archivo:
+        return json.load(archivo)
+except FileNotFoundError:
+    return {}              # todavía no existe: primera ejecución
+except json.JSONDecodeError:
+    sys.exit(1)            # archivo corrupto: frena para no destruir datos
+
+# ui.py — al convertir lo que escribe el usuario
+try:
+    valor = float(texto)
+except ValueError:
+    mostrar_error("Precio inválido.")   # vuelve a preguntar
+```
 
 Las reglas de negocio (DNI duplicado, asiento ocupado, etc.) **no** se manejan con
 excepciones, sino devolviendo un resultado, ya que son situaciones normales del
@@ -218,20 +305,38 @@ La persistencia se resuelve con archivos **JSON**, manejados en el módulo
 - La función `guardar` escribe el diccionario completo en el archivo
   correspondiente.
 
+```python
+def cargar(nombre_archivo: str) -> dict:
+    with open(ruta_data(nombre_archivo), "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def guardar(nombre_archivo: str, estructura: dict) -> None:
+    with open(ruta_data(nombre_archivo), "w", encoding="utf-8") as f:
+        json.dump(estructura, f, ensure_ascii=False, indent=4)
+```
+
 Las tres estructuras se guardan en `data/usuarios.json`, `data/viajes.json` y
 `data/ventas.json`. La ruta a la carpeta `data/` se construye de forma relativa a
 la ubicación del script, para que el sistema funcione en cualquier computadora sin
 depender de rutas absolutas.
 
-El guardado es **transaccional**: el archivo se actualiza inmediatamente después de
-cada operación que modifica los datos (crear un viaje, registrar una venta,
-desactivar un usuario, etc.), de modo que la información no se pierde si el programa
-se cierra.
+El guardado es **inmediato**: el archivo se actualiza apenas se modifica algún dato
+(crear un viaje, registrar una venta, desactivar un usuario, etc.), de modo que la
+información no se pierde si el programa se cierra.
 
 ### 5.6 Pruebas unitarias
 
 Las pruebas unitarias se implementaron con **`unittest`**, el módulo de pruebas de
 la biblioteca estándar de Python, en el archivo `src/tests/test_sistema.py`.
+
+```python
+class TestValidaciones(unittest.TestCase):
+    def test_dni_valido(self):
+        self.assertTrue(validaciones.es_dni_valido("38123456"))
+
+    def test_dni_invalido(self):
+        self.assertFalse(validaciones.es_dni_valido("38.123.456"))  # con puntos
+```
 
 Se probaron las funciones de cálculo y validación, y las reglas de negocio del
 dominio (usuarios, viajes y ventas). Cada prueba arma sus propios datos de ejemplo
@@ -240,7 +345,7 @@ no modifican el estado del sistema. Se verifican tanto los casos correctos como 
 casos de error (por ejemplo, que un DNI inválido sea rechazado o que no se pueda
 desactivar al último administrador).
 
-La suite cuenta con **82 pruebas**, todas exitosas. Se ejecutan con el comando
+En total son **82 pruebas**, todas exitosas. Se ejecutan con el comando
 `python -m unittest discover -s tests` desde la carpeta `src`.
 
 ---
@@ -250,6 +355,6 @@ La suite cuenta con **82 pruebas**, todas exitosas. Se ejecutan con el comando
 El sistema cumple con los requisitos planteados, integrando diccionarios, tuplas,
 conjuntos, excepciones, archivos y pruebas unitarias de forma coherente con el
 funcionamiento del negocio. La organización en capas y el manejo de los datos en
-una única fuente de verdad permitieron construir un sistema ordenado, fácil de
-probar y de mantener. El resultado es una aplicación de consola funcional, portable
-y con la información persistida de forma segura entre ejecuciones.
+un solo lugar permitieron construir un sistema ordenado, fácil de probar y de
+mantener. El resultado es una aplicación de consola funcional, que corre en
+cualquier computadora y con la información guardada de forma segura entre ejecuciones.
