@@ -4,7 +4,7 @@
 
 **Materia:** Algoritmos y Estructura de Datos I — UADE
 
-**Grupo:** _(completar número de grupo)_
+**Grupo:** 9
 
 **Integrantes:**
 
@@ -16,7 +16,7 @@
 | Chaina, Brian | 1213338 | Tester |
 | Ayala, Alan | 1196870 | Diseñador de UI/UX |
 
-**Fecha:** _(completar)_
+**Fecha:** 19 de junio de 2026.
 
 ---
 
