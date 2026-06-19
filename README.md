@@ -1,4 +1,4 @@
-# Nexus Viajes — Sistema de Gestión y Venta de Pasajes de Micro
+# Sistema de Gestión y Venta de Pasajes de Micro
 
 > Trabajo Práctico Obligatorio · **Algoritmos y Estructura de Datos I** · UADE
 
@@ -8,7 +8,7 @@ selección de asientos y reportes, con persistencia en archivos JSON.
 
 ---
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 - **Dos roles con menús propios:** administrador y boletero.
 - **Gestión de viajes:** alta, modificación, baja (con borrado físico o cancelación
@@ -24,7 +24,7 @@ selección de asientos y reportes, con persistencia en archivos JSON.
 
 ---
 
-## 🛠️ Requisitos
+## Requisitos
 
 - **Python 3.10 o superior** (se usan type hints con la sintaxis `X | None`).
 - **Sin librerías externas:** usa únicamente la biblioteca estándar de Python.
@@ -32,7 +32,7 @@ selección de asientos y reportes, con persistencia en archivos JSON.
 
 ---
 
-## ▶️ Cómo ejecutar
+## Cómo ejecutar
 
 Desde la carpeta del proyecto:
 
@@ -63,7 +63,7 @@ En cualquier dato que se pida, ingresar `0` cancela y vuelve al nivel anterior.
 
 ---
 
-## 🧪 Tests
+## Tests
 
 El proyecto incluye una suite de pruebas unitarias con `unittest` (biblioteca
 estándar). Se ejecuta desde la carpeta `src`:
@@ -75,7 +75,7 @@ python -m unittest discover -s tests
 
 ---
 
-## 📁 Estructura del proyecto
+## Estructura del proyecto
 
 ```
 tpo-sistema-pasajes/
@@ -106,7 +106,7 @@ Esto mantiene la lógica de negocio testeable y aislada de la entrada/salida.
 
 ---
 
-## 📌 Dónde se usa cada concepto del TP2
+## Dónde se usa cada concepto del TP2
 
 | Concepto | Dónde se implementa |
 |----------|---------------------|
@@ -122,7 +122,7 @@ Esto mantiene la lógica de negocio testeable y aislada de la entrada/salida.
 
 ---
 
-## 👥 Integrantes y Roles
+## Integrantes y Roles
 
 | Integrante | Legajo | Rol |
 |------------|--------|-----|
