@@ -301,14 +301,16 @@ funcionamiento del sistema y no errores.
 La persistencia se resuelve con archivos **JSON**, manejados en el módulo
 `persistencia.py`:
 
-- La función `cargar` lee un archivo JSON y devuelve su contenido como diccionario.
+- La función `cargar` lee un archivo JSON y devuelve su contenido como diccionario
+  (su manejo del archivo inexistente o corrupto se detalla en la sección 5.4).
 - La función `guardar` escribe el diccionario completo en el archivo
   correspondiente.
 
 ```python
-def cargar(nombre_archivo: str) -> dict:
-    with open(ruta_data(nombre_archivo), "r", encoding="utf-8") as f:
-        return json.load(f)
+def ruta_data(nombre_archivo: str) -> str:
+    # Ruta a data/<archivo> relativa al script: portable, sin rutas absolutas
+    carpeta = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(carpeta, "..", "data", nombre_archivo)
 
 def guardar(nombre_archivo: str, estructura: dict) -> None:
     with open(ruta_data(nombre_archivo), "w", encoding="utf-8") as f:
@@ -316,9 +318,9 @@ def guardar(nombre_archivo: str, estructura: dict) -> None:
 ```
 
 Las tres estructuras se guardan en `data/usuarios.json`, `data/viajes.json` y
-`data/ventas.json`. La ruta a la carpeta `data/` se construye de forma relativa a
-la ubicación del script, para que el sistema funcione en cualquier computadora sin
-depender de rutas absolutas.
+`data/ventas.json`. La función `ruta_data` arma la ruta a la carpeta `data/` de
+forma relativa a la ubicación del script, para que el sistema funcione en cualquier
+computadora sin depender de rutas absolutas.
 
 El guardado es **inmediato**: el archivo se actualiza apenas se modifica algún dato
 (crear un viaje, registrar una venta, desactivar un usuario, etc.), de modo que la
